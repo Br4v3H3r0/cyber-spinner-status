@@ -108,7 +108,7 @@ generateTestCase();`;
       }
       onOpenChange(newOpen);
     }}>
-      <DialogContent className="bg-hacker-card border-hacker-border text-white sm:max-w-2xl max-h-[80vh] overflow-y-auto">
+      <DialogContent className="bg-hacker-card border-hacker-border text-white sm:max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-hacker-green neonGreen">Generate Program Template</DialogTitle>
         </DialogHeader>
@@ -167,7 +167,7 @@ generateTestCase();`;
                   padding: '16px',
                   borderRadius: '4px',
                   fontSize: '14px',
-                  maxHeight: '400px',
+                  maxHeight: '500px',
                   overflowY: 'auto'
                 }}
               >

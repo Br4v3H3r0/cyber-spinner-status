@@ -70,16 +70,16 @@ const ViewCrashes = ({ onViewFile }: ViewCrashesProps) => {
         View Crashes
       </h2>
       
-      <div className="bg-hacker-background rounded border border-hacker-border flex-1 flex flex-col">
-        <ScrollArea className="flex-1">
-          <ul className="p-4">
+      <div className="bg-hacker-background rounded border border-hacker-border flex-1 flex flex-col overflow-hidden">
+        <ScrollArea className="flex-1 h-[120px]">
+          <ul className="p-2">
             {crashFiles.map((file) => (
               <li 
                 key={file}
-                className="py-2 px-2 flex justify-between items-center cursor-pointer transition-colors rounded hover:bg-hacker-card"
+                className="py-1 px-2 flex justify-between items-center cursor-pointer transition-colors rounded hover:bg-hacker-card"
               >
                 <span 
-                  className="flex-1 text-hacker-green"
+                  className="flex-1 text-hacker-green truncate"
                   onClick={() => onViewFile(file)}
                 >
                   {file}
@@ -99,7 +99,7 @@ const ViewCrashes = ({ onViewFile }: ViewCrashesProps) => {
           </ul>
         </ScrollArea>
         
-        <div className="p-4 border-t border-hacker-border">
+        <div className="p-3 border-t border-hacker-border mt-auto">
           <Button
             className="w-full bg-hacker-darkblue hover:bg-hacker-blue text-white"
             onClick={handleSendToVariant}
