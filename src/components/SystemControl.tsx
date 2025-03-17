@@ -52,9 +52,15 @@ const SystemControl = ({ onStartAll, onStopAll, loading }: SystemControlProps) =
       
       <div className="bg-hacker-background p-4 rounded border border-hacker-border">
         <h3 className="text-hacker-green mb-2">System Status</h3>
-        <div className="text-gray-300">
-          <div className="mb-1">Active Machines: <span className="text-white">2</span></div>
-          <div>Running Fuzzers: <span className="text-white">1</span></div>
+        <div className="grid grid-cols-2 gap-4 text-gray-300">
+          <div>
+            <div className="mb-1">Active Machines (Main): <span className="text-white">2</span></div>
+            <div>Running Fuzzers (Main): <span className="text-white">1</span></div>
+          </div>
+          <div>
+            <div className="mb-1">Active Machines (Variant): <span className="text-white">1</span></div>
+            <div>Running Fuzzers (Variant): <span className="text-white">0</span></div>
+          </div>
         </div>
       </div>
     </div>

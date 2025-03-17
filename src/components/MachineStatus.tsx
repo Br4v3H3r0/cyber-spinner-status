@@ -5,16 +5,21 @@ import { Button } from "@/components/ui/button";
 import TotalHashrate from "./TotalHashrate";
 import { useToast } from "@/components/ui/use-toast";
 
+type MachineType = "main" | "variant";
+
 type MachineData = {
   ip: string;
   status: "active" | "inactive";
   hashrate: number;
+  type: MachineType;
 };
 
 const MACHINES: MachineData[] = [
-  { ip: "192.168.1.101", status: "active", hashrate: 5120 },
-  { ip: "192.168.1.102", status: "active", hashrate: 4870 },
-  { ip: "192.168.1.103", status: "inactive", hashrate: 0 },
+  { ip: "192.168.1.101", status: "active", hashrate: 5120, type: "main" },
+  { ip: "192.168.1.102", status: "active", hashrate: 4870, type: "main" },
+  { ip: "192.168.1.103", status: "inactive", hashrate: 0, type: "main" },
+  { ip: "192.168.1.104", status: "active", hashrate: 4350, type: "variant" },
+  { ip: "192.168.1.105", status: "inactive", hashrate: 0, type: "variant" },
 ];
 
 interface MachineStatusProps {
@@ -26,26 +31,39 @@ interface MachineStatusProps {
 const MachineStatus = ({ onStart, onStop, loading }: MachineStatusProps) => {
   const { toast } = useToast();
   const [machines, setMachines] = useState<MachineData[]>(MACHINES);
-  const [newIpDialogOpen, setNewIpDialogOpen] = useState(false);
-  const [newIp, setNewIp] = useState("");
+  const [newIpDialogOpen, setNewIpDialogOpen] = useState<Record<MachineType, boolean>>({
+    main: false,
+    variant: false
+  });
+  const [newIp, setNewIp] = useState<Record<MachineType, string>>({
+    main: "",
+    variant: ""
+  });
   
-  const totalHashrate = machines.reduce((sum, machine) => sum + machine.hashrate, 0);
+  const mainMachines = machines.filter(m => m.type === "main");
+  const variantMachines = machines.filter(m => m.type === "variant");
   
-  const handleAddIp = () => {
-    if (newIp && /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/.test(newIp)) {
+  const totalHashrateMain = mainMachines.reduce((sum, machine) => sum + machine.hashrate, 0);
+  const totalHashrateVariant = variantMachines.reduce((sum, machine) => sum + machine.hashrate, 0);
+  const totalHashrate = totalHashrateMain + totalHashrateVariant;
+  
+  const handleAddIp = (type: MachineType) => {
+    const ip = newIp[type];
+    if (ip && /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/.test(ip)) {
       const newMachine: MachineData = {
-        ip: newIp,
+        ip,
         status: "inactive",
-        hashrate: 0
+        hashrate: 0,
+        type
       };
       
       setMachines([...machines, newMachine]);
-      setNewIp("");
-      setNewIpDialogOpen(false);
+      setNewIp({ ...newIp, [type]: "" });
+      setNewIpDialogOpen({ ...newIpDialogOpen, [type]: false });
       
       toast({
         title: "Machine Added",
-        description: `${newIp} added to the network.`,
+        description: `${ip} added to the ${type} network.`,
         className: "bg-hacker-card border-hacker-green text-white",
       });
     } else {
@@ -67,6 +85,128 @@ const MachineStatus = ({ onStart, onStop, loading }: MachineStatusProps) => {
       className: "bg-hacker-card border-hacker-red text-white",
     });
   };
+
+  const renderMachineTable = (type: MachineType, title: string) => {
+    const filteredMachines = machines.filter(m => m.type === type);
+    
+    return (
+      <div className="mb-4">
+        <div className="flex justify-between items-center mb-2">
+          <h3 className="text-lg font-semibold text-hacker-green">{title}</h3>
+        </div>
+        
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-hacker-border">
+                <th className="text-left py-2 text-hacker-green">IP Address</th>
+                <th className="text-center py-2 text-hacker-green">Status</th>
+                <th className="text-left py-2 text-hacker-green">Hashrate</th>
+                <th className="text-center py-2 text-hacker-green min-w-[120px]">Fuzzer</th>
+                <th className="text-center py-2 text-hacker-green">Delete</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredMachines.map((machine) => (
+                <tr key={machine.ip} className="border-b border-hacker-border">
+                  <td className="py-3 font-mono">{machine.ip}</td>
+                  <td className="py-3 text-center">
+                    <span className={`status-dot ${machine.status === "active" ? "status-active" : "status-inactive"}`} />
+                  </td>
+                  <td className="py-3 font-mono">
+                    {machine.status === "active" ? `${machine.hashrate.toLocaleString()}` : "0"}
+                  </td>
+                  <td className="py-3 text-center">
+                    {machine.status === "active" ? (
+                      <Button
+                        className="bg-hacker-darkred hover:bg-hacker-red text-white w-[100px]"
+                        size="sm"
+                        onClick={() => onStop(machine.ip)}
+                        disabled={loading[`stop-${machine.ip}`]}
+                      >
+                        {loading[`stop-${machine.ip}`] ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Stopping
+                          </>
+                        ) : (
+                          "Stop"
+                        )}
+                      </Button>
+                    ) : (
+                      <Button
+                        className="bg-hacker-darkgreen hover:bg-hacker-green text-white w-[100px]"
+                        size="sm"
+                        onClick={() => onStart(machine.ip)}
+                        disabled={loading[`start-${machine.ip}`]}
+                      >
+                        {loading[`start-${machine.ip}`] ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Starting
+                          </>
+                        ) : (
+                          "Start"
+                        )}
+                      </Button>
+                    )}
+                  </td>
+                  <td className="py-3 text-center">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => handleDelete(machine.ip)}
+                      className="text-hacker-red hover:text-white hover:bg-hacker-darkred"
+                    >
+                      <Trash size={16} />
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        
+        <div className="mt-2">
+          {newIpDialogOpen[type] ? (
+            <div className="flex gap-2 items-center">
+              <input
+                type="text"
+                value={newIp[type]}
+                onChange={(e) => setNewIp({ ...newIp, [type]: e.target.value })}
+                placeholder="Enter IP address"
+                className="bg-hacker-background border border-hacker-border text-white px-3 py-2 rounded"
+              />
+              <Button 
+                size="sm"
+                onClick={() => handleAddIp(type)}
+                className="bg-hacker-darkgreen hover:bg-hacker-green text-white"
+              >
+                Add
+              </Button>
+              <Button 
+                size="sm"
+                variant="ghost"
+                onClick={() => setNewIpDialogOpen({ ...newIpDialogOpen, [type]: false })}
+                className="text-hacker-red hover:bg-hacker-darkred"
+              >
+                Cancel
+              </Button>
+            </div>
+          ) : (
+            <Button
+              onClick={() => setNewIpDialogOpen({ ...newIpDialogOpen, [type]: true })}
+              className="bg-hacker-darkgreen hover:bg-hacker-green text-white"
+              size="sm"
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Add {title} Machine
+            </Button>
+          )}
+        </div>
+      </div>
+    );
+  };
   
   return (
     <div className="card-container">
@@ -77,117 +217,11 @@ const MachineStatus = ({ onStart, onStop, loading }: MachineStatusProps) => {
           </span>
           Machine Status
         </h2>
-        <TotalHashrate value={totalHashrate} />
+        <TotalHashrate main={totalHashrateMain} variant={totalHashrateVariant} />
       </div>
       
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead>
-            <tr className="border-b border-hacker-border">
-              <th className="text-left py-2 text-hacker-green">IP Address</th>
-              <th className="text-center py-2 text-hacker-green">Status</th>
-              <th className="text-left py-2 text-hacker-green">Hashrate</th>
-              <th className="text-center py-2 text-hacker-green min-w-[120px]">Fuzzer</th>
-              <th className="text-center py-2 text-hacker-green">Delete</th>
-            </tr>
-          </thead>
-          <tbody>
-            {machines.map((machine) => (
-              <tr key={machine.ip} className="border-b border-hacker-border">
-                <td className="py-3 font-mono">{machine.ip}</td>
-                <td className="py-3 text-center">
-                  <span className={`status-dot ${machine.status === "active" ? "status-active" : "status-inactive"}`} />
-                </td>
-                <td className="py-3 font-mono">
-                  {machine.status === "active" ? `${machine.hashrate.toLocaleString()}` : "0"}
-                </td>
-                <td className="py-3 text-center">
-                  {machine.status === "active" ? (
-                    <Button
-                      className="bg-hacker-darkred hover:bg-hacker-red text-white w-[100px]"
-                      size="sm"
-                      onClick={() => onStop(machine.ip)}
-                      disabled={loading[`stop-${machine.ip}`]}
-                    >
-                      {loading[`stop-${machine.ip}`] ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Stopping
-                        </>
-                      ) : (
-                        "Stop"
-                      )}
-                    </Button>
-                  ) : (
-                    <Button
-                      className="bg-hacker-darkgreen hover:bg-hacker-green text-white w-[100px]"
-                      size="sm"
-                      onClick={() => onStart(machine.ip)}
-                      disabled={loading[`start-${machine.ip}`]}
-                    >
-                      {loading[`start-${machine.ip}`] ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Starting
-                        </>
-                      ) : (
-                        "Start"
-                      )}
-                    </Button>
-                  )}
-                </td>
-                <td className="py-3 text-center">
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => handleDelete(machine.ip)}
-                    className="text-hacker-red hover:text-white hover:bg-hacker-darkred"
-                  >
-                    <Trash size={16} />
-                  </Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      
-      <div className="mt-4 flex justify-end">
-        {newIpDialogOpen ? (
-          <div className="flex gap-2 items-center">
-            <input
-              type="text"
-              value={newIp}
-              onChange={(e) => setNewIp(e.target.value)}
-              placeholder="Enter IP address"
-              className="bg-hacker-background border border-hacker-border text-white px-3 py-2 rounded"
-            />
-            <Button 
-              size="sm"
-              onClick={handleAddIp}
-              className="bg-hacker-darkgreen hover:bg-hacker-green text-white"
-            >
-              Add
-            </Button>
-            <Button 
-              size="sm"
-              variant="ghost"
-              onClick={() => setNewIpDialogOpen(false)}
-              className="text-hacker-red hover:bg-hacker-darkred"
-            >
-              Cancel
-            </Button>
-          </div>
-        ) : (
-          <Button
-            onClick={() => setNewIpDialogOpen(true)}
-            className="bg-hacker-darkgreen hover:bg-hacker-green text-white"
-          >
-            <Plus className="mr-2 h-4 w-4" />
-            Add Machine
-          </Button>
-        )}
-      </div>
+      {renderMachineTable("main", "Fuzzilli Main")}
+      {renderMachineTable("variant", "Fuzzilli Variant")}
     </div>
   );
 };
