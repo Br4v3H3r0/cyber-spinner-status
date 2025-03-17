@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { 
   LineChart, 
@@ -11,21 +11,41 @@ import {
 } from 'recharts';
 
 // Generate random data for the chart
-const generateData = (points = 20) => {
-  const data = [];
-  for (let i = 0; i < points; i++) {
-    data.push({
-      name: i,
-      cpu: Math.floor(Math.random() * 60) + 20,
-      memory: Math.floor(Math.random() * 60) + 20,
-    });
-  }
-  return data;
+const generateDataPoint = () => {
+  return {
+    time: new Date().toLocaleTimeString(),
+    cpu: Math.floor(Math.random() * 60) + 20,
+    memory: Math.floor(Math.random() * 60) + 20,
+  };
 };
 
 const ResourceUsage = () => {
   const [selectedMachine, setSelectedMachine] = useState("all");
-  const data = generateData();
+  const [data, setData] = useState(() => {
+    const initialData = [];
+    for (let i = 0; i < 20; i++) {
+      initialData.push(generateDataPoint());
+    }
+    return initialData;
+  });
+
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  
+  useEffect(() => {
+    // Update data every second
+    timerRef.current = setInterval(() => {
+      setData(prevData => {
+        const newData = [...prevData.slice(1), generateDataPoint()];
+        return newData;
+      });
+    }, 1000);
+    
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, []);
   
   return (
     <div className="card-container">
@@ -52,7 +72,7 @@ const ResourceUsage = () => {
       <div className="h-64">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data} margin={{ top: 5, right: 5, left: 0, bottom: 5 }}>
-            <XAxis dataKey="name" stroke="#555" />
+            <XAxis dataKey="time" stroke="#555" tickFormatter={(value) => value.split(':')[2]} />
             <YAxis stroke="#555" domain={[0, 100]} />
             <CartesianGrid stroke="#333" strokeDasharray="3 3" />
             <Line 
@@ -61,6 +81,7 @@ const ResourceUsage = () => {
               stroke="#ff3e3e" 
               strokeWidth={2}
               dot={false}
+              isAnimationActive={false}
             />
             <Line 
               type="monotone" 
@@ -68,6 +89,7 @@ const ResourceUsage = () => {
               stroke="#1eff00" 
               strokeWidth={2}
               dot={false}
+              isAnimationActive={false}
             />
           </LineChart>
         </ResponsiveContainer>
