@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Send, Trash } from "lucide-react";
+import { Check, Send } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/components/ui/use-toast";
 
@@ -26,14 +26,22 @@ const crashFiles = [
 
 const ViewCrashes = ({ onViewFile }: ViewCrashesProps) => {
   const { toast } = useToast();
-  const [selectedFile, setSelectedFile] = useState<string | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
 
+  const handleToggleSelection = (filename: string) => {
+    if (selectedFiles.includes(filename)) {
+      setSelectedFiles(selectedFiles.filter(file => file !== filename));
+    } else {
+      setSelectedFiles([...selectedFiles, filename]);
+    }
+  };
+
   const handleSendToVariant = () => {
-    if (!selectedFile) {
+    if (selectedFiles.length === 0) {
       toast({
-        title: "No file selected",
-        description: "Please select a crash file to send.",
+        title: "No files selected",
+        description: "Please select crash files to send.",
         variant: "destructive",
         className: "bg-hacker-card border-hacker-red text-white",
       });
@@ -46,15 +54,15 @@ const ViewCrashes = ({ onViewFile }: ViewCrashesProps) => {
     setTimeout(() => {
       setLoading(false);
       toast({
-        title: "Crash Sent",
-        description: `${selectedFile} sent to Variant successfully.`,
+        title: "Crashes Sent",
+        description: `${selectedFiles.length} file(s) sent to Variant successfully.`,
         className: "bg-hacker-card border-hacker-green text-white",
       });
     }, 1500);
   };
 
   return (
-    <div className="card-container h-[400px] flex flex-col">
+    <div className="card-container h-[240px] flex flex-col">
       <h2 className="text-xl font-semibold text-hacker-green neonGreen mb-4 flex items-center gap-2">
         <span className="bg-hacker-darkgreen p-1 rounded">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 13V7" /><path d="M12 17h.01" /><rect width="18" height="18" x="3" y="3" rx="2" /></svg>
@@ -68,25 +76,24 @@ const ViewCrashes = ({ onViewFile }: ViewCrashesProps) => {
             {crashFiles.map((file) => (
               <li 
                 key={file}
-                className={`py-2 px-2 flex justify-between items-center cursor-pointer transition-colors rounded ${selectedFile === file ? 'bg-hacker-darkgreen bg-opacity-30' : 'hover:bg-hacker-card'}`}
+                className="py-2 px-2 flex justify-between items-center cursor-pointer transition-colors rounded hover:bg-hacker-card"
               >
                 <span 
-                  className={`flex-1 ${selectedFile === file ? 'text-white' : 'text-hacker-green'}`}
-                  onClick={() => {
-                    setSelectedFile(file);
-                    onViewFile(file);
-                  }}
+                  className="flex-1 text-hacker-green"
+                  onClick={() => onViewFile(file)}
                 >
                   {file}
                 </span>
-                <Button
-                  size="sm"
-                  variant="ghost" 
-                  className="ml-2 hover:bg-hacker-darkgreen hover:text-white"
-                  onClick={() => setSelectedFile(file)}
+                <div 
+                  className={`w-6 h-6 rounded-full border flex items-center justify-center mr-2 transition-colors ${
+                    selectedFiles.includes(file) 
+                      ? 'bg-hacker-darkgreen border-hacker-green' 
+                      : 'border-hacker-border'
+                  }`}
+                  onClick={() => handleToggleSelection(file)}
                 >
-                  Select
-                </Button>
+                  {selectedFiles.includes(file) && <Check size={14} className="text-white" />}
+                </div>
               </li>
             ))}
           </ul>
@@ -96,7 +103,7 @@ const ViewCrashes = ({ onViewFile }: ViewCrashesProps) => {
           <Button
             className="w-full bg-hacker-darkblue hover:bg-hacker-blue text-white"
             onClick={handleSendToVariant}
-            disabled={!selectedFile || loading}
+            disabled={selectedFiles.length === 0 || loading}
           >
             {loading ? (
               <>
@@ -109,7 +116,7 @@ const ViewCrashes = ({ onViewFile }: ViewCrashesProps) => {
             ) : (
               <>
                 <Send className="mr-2 h-4 w-4" />
-                Send Crash to Variant
+                Send Crashes to Variant
               </>
             )}
           </Button>

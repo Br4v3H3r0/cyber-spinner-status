@@ -87,7 +87,7 @@ const MachineStatus = ({ onStart, onStop, loading }: MachineStatusProps) => {
               <th className="text-left py-2 text-hacker-green">IP Address</th>
               <th className="text-center py-2 text-hacker-green">Status</th>
               <th className="text-left py-2 text-hacker-green">Hashrate</th>
-              <th className="text-left py-2 text-hacker-green min-w-[120px]">Fuzzer</th>
+              <th className="text-center py-2 text-hacker-green min-w-[120px]">Fuzzer</th>
               <th className="text-center py-2 text-hacker-green">Delete</th>
             </tr>
           </thead>
@@ -101,7 +101,7 @@ const MachineStatus = ({ onStart, onStop, loading }: MachineStatusProps) => {
                 <td className="py-3 font-mono">
                   {machine.status === "active" ? `${machine.hashrate.toLocaleString()}` : "0"}
                 </td>
-                <td className="py-3 min-w-[120px]">
+                <td className="py-3 text-center">
                   {machine.status === "active" ? (
                     <Button
                       className="bg-hacker-darkred hover:bg-hacker-red text-white w-[100px]"
