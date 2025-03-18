@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import MachineStatus from "./MachineStatus";
@@ -5,6 +6,7 @@ import ResourceUsage from "./ResourceUsage";
 import ProgramTemplates from "./ProgramTemplates";
 import ViewCrashes from "./ViewCrashes";
 import SystemControl from "./SystemControl";
+import TesterNode from "./TesterNode";
 import GenerateDialog from "./GenerateDialog";
 import CrashFileDialog from "./CrashFileDialog";
 import { useToast } from "@/components/ui/use-toast";
@@ -37,6 +39,32 @@ const Dashboard = () => {
       toast({
         title: "Fuzzer Stopped",
         description: `Fuzzer on ${ip} stopped successfully.`,
+        className: "bg-hacker-card border-hacker-red text-white",
+      });
+    }, 1500);
+  };
+
+  const handleStartTester = () => {
+    setLoading(prev => ({ ...prev, "start-tester": true }));
+    
+    setTimeout(() => {
+      setLoading(prev => ({ ...prev, "start-tester": false }));
+      toast({
+        title: "Tester Started",
+        description: "Tester node started successfully.",
+        className: "bg-hacker-card border-hacker-green text-white",
+      });
+    }, 1500);
+  };
+
+  const handleStopTester = () => {
+    setLoading(prev => ({ ...prev, "stop-tester": true }));
+    
+    setTimeout(() => {
+      setLoading(prev => ({ ...prev, "stop-tester": false }));
+      toast({
+        title: "Tester Stopped",
+        description: "Tester node stopped successfully.",
         className: "bg-hacker-card border-hacker-red text-white",
       });
     }, 1500);
@@ -91,7 +119,14 @@ const Dashboard = () => {
           onStop={handleStopFuzzer} 
           loading={loading}
         />
-        <ResourceUsage />
+        <div className="grid grid-rows-2 gap-6">
+          <ResourceUsage />
+          <TesterNode 
+            onStart={handleStartTester}
+            onStop={handleStopTester}
+            loading={loading}
+          />
+        </div>
         <ProgramTemplates 
           onGenerate={handleGenerate} 
           loading={loading}

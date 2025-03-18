@@ -69,7 +69,7 @@ const ResourceUsage = () => {
         </Select>
       </div>
       
-      <div className="h-64">
+      <div className="h-52">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data} margin={{ top: 5, right: 5, left: 0, bottom: 5 }}>
             <XAxis dataKey="time" stroke="#555" tickFormatter={(value) => value.split(':')[2]} />

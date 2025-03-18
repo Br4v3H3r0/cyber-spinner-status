@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Loader2, Plus, Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import TotalHashrate from "./TotalHashrate";
 import { useToast } from "@/components/ui/use-toast";
 
@@ -12,14 +13,15 @@ type MachineData = {
   status: "active" | "inactive";
   hashrate: number;
   type: MachineType;
+  role: "master" | "slave";
 };
 
 const MACHINES: MachineData[] = [
-  { ip: "192.168.1.101", status: "active", hashrate: 5120, type: "main" },
-  { ip: "192.168.1.102", status: "active", hashrate: 4870, type: "main" },
-  { ip: "192.168.1.103", status: "inactive", hashrate: 0, type: "main" },
-  { ip: "192.168.1.104", status: "active", hashrate: 4350, type: "variant" },
-  { ip: "192.168.1.105", status: "inactive", hashrate: 0, type: "variant" },
+  { ip: "192.168.1.101", status: "active", hashrate: 5120, type: "main", role: "master" },
+  { ip: "192.168.1.102", status: "active", hashrate: 4870, type: "main", role: "slave" },
+  { ip: "192.168.1.103", status: "inactive", hashrate: 0, type: "main", role: "slave" },
+  { ip: "192.168.1.104", status: "active", hashrate: 4350, type: "variant", role: "master" },
+  { ip: "192.168.1.105", status: "inactive", hashrate: 0, type: "variant", role: "slave" },
 ];
 
 interface MachineStatusProps {
@@ -45,7 +47,6 @@ const MachineStatus = ({ onStart, onStop, loading }: MachineStatusProps) => {
   
   const totalHashrateMain = mainMachines.reduce((sum, machine) => sum + machine.hashrate, 0);
   const totalHashrateVariant = variantMachines.reduce((sum, machine) => sum + machine.hashrate, 0);
-  const totalHashrate = totalHashrateMain + totalHashrateVariant;
   
   const handleAddIp = (type: MachineType) => {
     const ip = newIp[type];
@@ -54,7 +55,8 @@ const MachineStatus = ({ onStart, onStop, loading }: MachineStatusProps) => {
         ip,
         status: "inactive",
         hashrate: 0,
-        type
+        type,
+        role: "slave" // New machines are always slaves
       };
       
       setMachines([...machines, newMachine]);
@@ -109,7 +111,15 @@ const MachineStatus = ({ onStart, onStop, loading }: MachineStatusProps) => {
             <tbody>
               {filteredMachines.map((machine) => (
                 <tr key={machine.ip} className="border-b border-hacker-border">
-                  <td className="py-3 font-mono">{machine.ip}</td>
+                  <td className="py-3 font-mono flex items-center gap-2">
+                    {machine.ip}
+                    <Badge className={machine.role === "master" 
+                      ? "bg-hacker-darkgreen text-white" 
+                      : "bg-hacker-card text-gray-300 border border-gray-600"}
+                    >
+                      {machine.role === "master" ? "Master" : "Slave"}
+                    </Badge>
+                  </td>
                   <td className="py-3 text-center">
                     <span className={`status-dot ${machine.status === "active" ? "status-active" : "status-inactive"}`} />
                   </td>
