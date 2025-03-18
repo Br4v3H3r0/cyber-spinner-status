@@ -1,12 +1,12 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import MachineStatus from "./MachineStatus";
 import ResourceUsage from "./ResourceUsage";
 import ProgramTemplates from "./ProgramTemplates";
 import ViewCrashes from "./ViewCrashes";
 import SystemControl from "./SystemControl";
-import TesterNode from "./TesterNode";
+import TesterNode, { TesterStatus } from "./TesterNode";
 import GenerateDialog from "./GenerateDialog";
 import CrashFileDialog from "./CrashFileDialog";
 import { useToast } from "@/components/ui/use-toast";
@@ -17,6 +17,7 @@ const Dashboard = () => {
   const [isCrashFileOpen, setIsCrashFileOpen] = useState(false);
   const [selectedCrashFile, setSelectedCrashFile] = useState("");
   const [loading, setLoading] = useState<Record<string, boolean>>({});
+  const [testerStatus, setTesterStatus] = useState<TesterStatus>("idle");
   
   const handleStartFuzzer = (ip: string) => {
     setLoading(prev => ({ ...prev, [`start-${ip}`]: true }));
@@ -69,6 +70,20 @@ const Dashboard = () => {
       });
     }, 1500);
   };
+  
+  const handleResetTester = () => {
+    setLoading(prev => ({ ...prev, "reset-tester": true }));
+    
+    setTimeout(() => {
+      setLoading(prev => ({ ...prev, "reset-tester": false }));
+      setTesterStatus("idle");
+      toast({
+        title: "Tester Reset",
+        description: "Tester node reset successfully.",
+        className: "bg-hacker-card border-hacker-green text-white",
+      });
+    }, 1000);
+  };
 
   const handleViewCrashFile = (filename: string) => {
     setSelectedCrashFile(filename);
@@ -77,6 +92,26 @@ const Dashboard = () => {
 
   const handleGenerate = () => {
     setIsGenerateOpen(true);
+  };
+  
+  const handleSendToTester = () => {
+    setTesterStatus("testing");
+    
+    // Simulate testing process
+    setTimeout(() => {
+      // Randomly decide if test passes or fails
+      const success = Math.random() > 0.3; // 70% chance of success
+      
+      setTesterStatus(success ? "success" : "error");
+      
+      toast({
+        title: success ? "Test Successful" : "Test Failed",
+        description: success 
+          ? "The test completed successfully. You can now upload the template." 
+          : "The test failed. Please check the template and try again.",
+        className: `bg-hacker-card border-${success ? 'hacker-green' : 'hacker-red'} text-white`,
+      });
+    }, 3000);
   };
 
   const handleStartAllFuzzers = () => {
@@ -124,12 +159,16 @@ const Dashboard = () => {
           <TesterNode 
             onStart={handleStartTester}
             onStop={handleStopTester}
+            onReset={handleResetTester}
             loading={loading}
+            testerStatus={testerStatus}
           />
         </div>
         <ProgramTemplates 
           onGenerate={handleGenerate} 
           loading={loading}
+          onSendToTester={handleSendToTester}
+          testerStatus={testerStatus}
         />
         <ViewCrashes 
           onViewFile={handleViewCrashFile}

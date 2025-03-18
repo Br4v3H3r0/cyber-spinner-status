@@ -1,29 +1,31 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { Loader2, RotateCcw } from "lucide-react";
 
-type TesterStatus = "idle" | "testing" | "error";
+export type TesterStatus = "idle" | "testing" | "success" | "error";
 
 interface TesterNodeProps {
   onStart: () => void;
   onStop: () => void;
+  onReset: () => void;
   loading: Record<string, boolean>;
+  testerStatus: TesterStatus;
 }
 
-const TesterNode = ({ onStart, onStop, loading }: TesterNodeProps) => {
+const TesterNode = ({ onStart, onStop, onReset, loading, testerStatus }: TesterNodeProps) => {
   // Mock data for the tester node
   const testerData = {
     ip: "192.168.1.200",
     status: "active" as const,
     hashrate: 3500,
-    testerStatus: "idle" as TesterStatus
   };
 
   const getStatusColor = (status: TesterStatus) => {
     switch(status) {
       case "idle": return "bg-hacker-green";
       case "testing": return "bg-yellow-500";
+      case "success": return "bg-hacker-green";
       case "error": return "bg-hacker-red";
       default: return "bg-gray-500";
     }
@@ -33,6 +35,7 @@ const TesterNode = ({ onStart, onStop, loading }: TesterNodeProps) => {
     switch(status) {
       case "idle": return "Idle";
       case "testing": return "Testing";
+      case "success": return "Success";
       case "error": return "Error";
       default: return "Unknown";
     }
@@ -106,11 +109,29 @@ const TesterNode = ({ onStart, onStop, loading }: TesterNodeProps) => {
         </table>
       </div>
       
-      <div className="mt-4 flex items-center">
-        <div className="text-white mr-2">Tester Status:</div>
-        <Badge className={`${getStatusColor(testerData.testerStatus)} px-3 py-1`}>
-          {getStatusText(testerData.testerStatus)}
-        </Badge>
+      <div className="mt-4 flex items-center justify-between">
+        <div className="flex items-center">
+          <div className="text-white mr-2">Tester Status:</div>
+          <Badge className={`${getStatusColor(testerStatus)} px-3 py-1`}>
+            {getStatusText(testerStatus)}
+          </Badge>
+        </div>
+        
+        <Button
+          size="sm"
+          onClick={onReset}
+          className="bg-hacker-background hover:bg-hacker-card border border-hacker-border text-hacker-green"
+          disabled={testerStatus === "idle" || loading["reset-tester"]}
+        >
+          {loading["reset-tester"] ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <>
+              <RotateCcw size={14} className="mr-1" />
+              Reset
+            </>
+          )}
+        </Button>
       </div>
     </div>
   );

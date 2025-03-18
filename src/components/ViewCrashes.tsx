@@ -1,15 +1,16 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Check, Send } from "lucide-react";
+import { Check, Send, Trash } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/components/ui/use-toast";
+import { Card } from "@/components/ui/card";
 
 interface ViewCrashesProps {
   onViewFile: (filename: string) => void;
 }
 
-const crashFiles = [
+const initialCrashFiles = [
   "crash-1.js",
   "crash-2.js",
   "crash-3.js",
@@ -26,8 +27,14 @@ const crashFiles = [
 
 const ViewCrashes = ({ onViewFile }: ViewCrashesProps) => {
   const { toast } = useToast();
+  const [crashFiles, setCrashFiles] = useState<string[]>(initialCrashFiles);
   const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  
+  // Crash statistics - for demo purposes we'll set 8 as flaky and the rest as deterministic
+  const totalCrashes = crashFiles.length;
+  const flakyCrashes = 8;
+  const deterministic = totalCrashes - flakyCrashes;
 
   const handleToggleSelection = (filename: string) => {
     if (selectedFiles.includes(filename)) {
@@ -35,6 +42,18 @@ const ViewCrashes = ({ onViewFile }: ViewCrashesProps) => {
     } else {
       setSelectedFiles([...selectedFiles, filename]);
     }
+  };
+
+  const handleDeleteCrash = (filename: string, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent triggering row click
+    setCrashFiles(crashFiles.filter(file => file !== filename));
+    setSelectedFiles(selectedFiles.filter(file => file !== filename));
+    
+    toast({
+      title: "Crash File Deleted",
+      description: `${filename} has been deleted.`,
+      className: "bg-hacker-card border-hacker-red text-white",
+    });
   };
 
   const handleSendToVariant = () => {
@@ -63,12 +82,27 @@ const ViewCrashes = ({ onViewFile }: ViewCrashesProps) => {
 
   return (
     <div className="card-container h-[240px] flex flex-col">
-      <h2 className="text-xl font-semibold text-hacker-green neonGreen mb-4 flex items-center gap-2">
-        <span className="bg-hacker-darkgreen p-1 rounded">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 13V7" /><path d="M12 17h.01" /><rect width="18" height="18" x="3" y="3" rx="2" /></svg>
-        </span>
-        View Crashes
-      </h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-semibold text-hacker-green neonGreen flex items-center gap-2">
+          <span className="bg-hacker-darkgreen p-1 rounded">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 13V7" /><path d="M12 17h.01" /><rect width="18" height="18" x="3" y="3" rx="2" /></svg>
+          </span>
+          View Crashes
+        </h2>
+        
+        <Card className="bg-hacker-card border border-hacker-border p-2">
+          <div className="text-xs text-hacker-green font-semibold">Total Crashes</div>
+          <div className="text-xl font-bold font-mono">{totalCrashes}</div>
+          <div className="grid grid-cols-2 gap-2 mt-1 text-xs">
+            <div className="text-hacker-green">
+              Flaky: <span className="font-mono">{flakyCrashes}</span>
+            </div>
+            <div className="text-hacker-red">
+              Deterministic: <span className="font-mono">{deterministic}</span>
+            </div>
+          </div>
+        </Card>
+      </div>
       
       <div className="bg-hacker-background rounded border border-hacker-border flex-1 flex flex-col overflow-hidden">
         <ScrollArea className="flex-1 h-[120px]">
@@ -84,15 +118,25 @@ const ViewCrashes = ({ onViewFile }: ViewCrashesProps) => {
                 >
                   {file}
                 </span>
-                <div 
-                  className={`w-6 h-6 rounded-full border flex items-center justify-center mr-2 transition-colors ${
-                    selectedFiles.includes(file) 
-                      ? 'bg-hacker-darkgreen border-hacker-green' 
-                      : 'border-hacker-border'
-                  }`}
-                  onClick={() => handleToggleSelection(file)}
-                >
-                  {selectedFiles.includes(file) && <Check size={14} className="text-white" />}
+                <div className="flex items-center">
+                  <div 
+                    className={`w-6 h-6 rounded-full border flex items-center justify-center mr-2 transition-colors ${
+                      selectedFiles.includes(file) 
+                        ? 'bg-hacker-darkgreen border-hacker-green' 
+                        : 'border-hacker-border'
+                    }`}
+                    onClick={() => handleToggleSelection(file)}
+                  >
+                    {selectedFiles.includes(file) && <Check size={14} className="text-white" />}
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={(e) => handleDeleteCrash(file, e)}
+                    className="text-hacker-red hover:text-white hover:bg-hacker-darkred"
+                  >
+                    <Trash size={16} />
+                  </Button>
                 </div>
               </li>
             ))}

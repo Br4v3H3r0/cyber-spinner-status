@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2, Upload, MessageSquare, Trash, Code } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import GenerateTemplateDialog from "./GenerateTemplateDialog";
+import { TesterStatus } from "./TesterNode";
 
 interface TemplateFile {
   name: string;
@@ -13,9 +14,11 @@ interface TemplateFile {
 interface ProgramTemplatesProps {
   onGenerate: () => void;
   loading: Record<string, boolean>;
+  onSendToTester: () => void;
+  testerStatus: TesterStatus;
 }
 
-const ProgramTemplates = ({ onGenerate, loading }: ProgramTemplatesProps) => {
+const ProgramTemplates = ({ onGenerate, loading, onSendToTester, testerStatus }: ProgramTemplatesProps) => {
   const { toast } = useToast();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -110,6 +113,8 @@ generateTestCase();`
 
   const handleSendToTester = () => {
     if (generatedTemplate) {
+      onSendToTester();
+      
       toast({
         title: "Template Sent",
         description: `${generatedTemplate.name} has been sent to the tester node.`,
@@ -130,6 +135,15 @@ generateTestCase();`
   const handleViewTemplate = () => {
     if (generatedTemplate) {
       setTemplateDialogOpen(true);
+    }
+  };
+  
+  const handleSaveTemplateChanges = (updatedContent: string) => {
+    if (generatedTemplate) {
+      setGeneratedTemplate({
+        ...generatedTemplate,
+        content: updatedContent
+      });
     }
   };
 
@@ -196,9 +210,10 @@ generateTestCase();`
                 variant="ghost"
                 size="sm"
                 onClick={handleSendToTester}
+                disabled={testerStatus === "testing"}
                 className="text-hacker-green hover:bg-hacker-darkgreen hover:text-white"
               >
-                Send to Tester
+                {testerStatus === "success" ? "Upload" : "Send to Tester"}
               </Button>
               <Button
                 variant="ghost"
@@ -237,6 +252,7 @@ generateTestCase();`
         open={templateDialogOpen} 
         onOpenChange={setTemplateDialogOpen}
         template={generatedTemplate}
+        onSave={handleSaveTemplateChanges}
       />
     </div>
   );
