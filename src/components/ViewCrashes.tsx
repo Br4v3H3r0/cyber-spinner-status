@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Check, Send, Trash } from "lucide-react";
@@ -81,7 +80,7 @@ const ViewCrashes = ({ onViewFile }: ViewCrashesProps) => {
   };
 
   return (
-    <div className="card-container h-[240px] flex flex-col">
+    <div className="card-container h-[300px] flex flex-col">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold text-hacker-green neonGreen flex items-center gap-2">
           <span className="bg-hacker-darkgreen p-1 rounded">
