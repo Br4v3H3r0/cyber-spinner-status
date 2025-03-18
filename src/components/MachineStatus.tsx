@@ -150,7 +150,7 @@ const MachineStatus = ({ onStart, onStop, loading }: MachineStatusProps) => {
                         className="bg-hacker-darkred hover:bg-hacker-red text-white w-[100px]"
                         size="sm"
                         onClick={() => onStop(machine.ip)}
-                        disabled={loading[`stop-${machine.ip}`]}
+                        disabled={loading[`stop-${machine.ip}`] || loading[`start-${machine.ip}`]}
                       >
                         {loading[`stop-${machine.ip}`] ? (
                           <>
@@ -166,7 +166,7 @@ const MachineStatus = ({ onStart, onStop, loading }: MachineStatusProps) => {
                         className="bg-hacker-darkgreen hover:bg-hacker-green text-white w-[100px]"
                         size="sm"
                         onClick={() => onStart(machine.ip)}
-                        disabled={loading[`start-${machine.ip}`]}
+                        disabled={loading[`start-${machine.ip}`] || loading[`stop-${machine.ip}`]}
                       >
                         {loading[`start-${machine.ip}`] ? (
                           <>
@@ -184,7 +184,10 @@ const MachineStatus = ({ onStart, onStop, loading }: MachineStatusProps) => {
                       size="sm"
                       variant="ghost"
                       onClick={() => handleDelete(machine.ip)}
-                      className="text-hacker-red hover:text-white hover:bg-hacker-darkred"
+                      disabled={machine.status === "active" || loading[`start-${machine.ip}`] || loading[`stop-${machine.ip}`]}
+                      className={`text-hacker-red hover:text-white hover:bg-hacker-darkred ${
+                        machine.status === "active" ? "opacity-50 cursor-not-allowed" : ""
+                      }`}
                     >
                       <Trash size={16} />
                     </Button>
