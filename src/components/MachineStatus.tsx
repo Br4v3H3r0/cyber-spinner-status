@@ -5,6 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import TotalHashrate from "./TotalHashrate";
 import { useToast } from "@/components/ui/use-toast";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type MachineType = "main" | "variant";
 
@@ -41,12 +48,21 @@ const MachineStatus = ({ onStart, onStop, loading }: MachineStatusProps) => {
     main: "",
     variant: ""
   });
+  const [newRole, setNewRole] = useState<Record<MachineType, "master" | "slave">>({
+    main: "slave",
+    variant: "slave"
+  });
   
   const mainMachines = machines.filter(m => m.type === "main");
   const variantMachines = machines.filter(m => m.type === "variant");
   
   const totalHashrateMain = mainMachines.reduce((sum, machine) => sum + machine.hashrate, 0);
   const totalHashrateVariant = variantMachines.reduce((sum, machine) => sum + machine.hashrate, 0);
+  
+  // Check if a master already exists for a specific machine type
+  const hasMaster = (type: MachineType): boolean => {
+    return machines.some(m => m.type === type && m.role === "master");
+  };
   
   const handleAddIp = (type: MachineType) => {
     const ip = newIp[type];
@@ -56,16 +72,17 @@ const MachineStatus = ({ onStart, onStop, loading }: MachineStatusProps) => {
         status: "inactive",
         hashrate: 0,
         type,
-        role: "slave" // New machines are always slaves
+        role: newRole[type]
       };
       
       setMachines([...machines, newMachine]);
       setNewIp({ ...newIp, [type]: "" });
+      setNewRole({ ...newRole, [type]: "slave" }); // Reset role to slave after adding
       setNewIpDialogOpen({ ...newIpDialogOpen, [type]: false });
       
       toast({
         title: "Machine Added",
-        description: `${ip} added to the ${type} network.`,
+        description: `${ip} added to the ${type} network as ${newRole[type]}.`,
         className: "bg-hacker-card border-hacker-green text-white",
       });
     } else {
@@ -90,6 +107,7 @@ const MachineStatus = ({ onStart, onStop, loading }: MachineStatusProps) => {
 
   const renderMachineTable = (type: MachineType, title: string) => {
     const filteredMachines = machines.filter(m => m.type === type);
+    const hasMasterForType = hasMaster(type);
     
     return (
       <div className="mb-4">
@@ -179,7 +197,7 @@ const MachineStatus = ({ onStart, onStop, loading }: MachineStatusProps) => {
         
         <div className="mt-2">
           {newIpDialogOpen[type] ? (
-            <div className="flex gap-2 items-center">
+            <div className="flex gap-2 items-center flex-wrap">
               <input
                 type="text"
                 value={newIp[type]}
@@ -187,6 +205,26 @@ const MachineStatus = ({ onStart, onStop, loading }: MachineStatusProps) => {
                 placeholder="Enter IP address"
                 className="bg-hacker-background border border-hacker-border text-white px-3 py-2 rounded"
               />
+              
+              <Select
+                value={newRole[type]}
+                onValueChange={(value: "master" | "slave") => setNewRole({ ...newRole, [type]: value })}
+              >
+                <SelectTrigger className="w-[120px] bg-hacker-background border-hacker-border text-white">
+                  <SelectValue placeholder="Role" />
+                </SelectTrigger>
+                <SelectContent className="bg-hacker-card border-hacker-border text-white">
+                  <SelectItem 
+                    value="master" 
+                    disabled={hasMasterForType}
+                    className={hasMasterForType ? "opacity-50 cursor-not-allowed" : ""}
+                  >
+                    Master
+                  </SelectItem>
+                  <SelectItem value="slave">Slave</SelectItem>
+                </SelectContent>
+              </Select>
+              
               <Button 
                 size="sm"
                 onClick={() => handleAddIp(type)}
@@ -197,7 +235,10 @@ const MachineStatus = ({ onStart, onStop, loading }: MachineStatusProps) => {
               <Button 
                 size="sm"
                 variant="ghost"
-                onClick={() => setNewIpDialogOpen({ ...newIpDialogOpen, [type]: false })}
+                onClick={() => {
+                  setNewIpDialogOpen({ ...newIpDialogOpen, [type]: false });
+                  setNewRole({ ...newRole, [type]: "slave" }); // Reset role to slave when canceling
+                }}
                 className="text-hacker-red hover:bg-hacker-darkred"
               >
                 Cancel
