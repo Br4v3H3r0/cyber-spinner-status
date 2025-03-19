@@ -191,30 +191,34 @@ Stack trace:
       </div>
       
       <Dialog open={isErrorLogOpen} onOpenChange={setIsErrorLogOpen}>
-        <DialogContent className="bg-hacker-card border-hacker-border text-white max-w-4xl max-h-[90vh] w-[90vw]">
+        <DialogContent className="bg-hacker-card border-hacker-border text-white max-w-4xl max-h-[90vh] w-[90vw] flex flex-col">
           <DialogTitle className="text-hacker-red">Error Trace Log</DialogTitle>
-          <ScrollArea className="h-[80vh] w-full overflow-auto">
-            <div className="p-4 w-full overflow-auto">
-              <SyntaxHighlighter 
-                language="javascript" 
-                style={tomorrow} 
-                customStyle={{
-                  backgroundColor: 'transparent',
-                  padding: '16px',
-                  margin: 0,
-                  borderRadius: '4px',
-                  width: '100%',
-                  maxWidth: '100%',
-                  overflowX: 'auto',
-                  whiteSpace: 'pre-wrap',
-                  wordBreak: 'break-word'
-                }}
-                wrapLines={true}
-              >
-                {errorLog}
-              </SyntaxHighlighter>
-            </div>
-          </ScrollArea>
+          <div className="flex-1 min-h-0">
+            <ScrollArea className="h-[70vh] rounded border border-hacker-border bg-hacker-background">
+              <div className="p-4">
+                <div className="overflow-x-auto">
+                  <pre className="w-max min-w-full">
+                    <SyntaxHighlighter 
+                      language="javascript" 
+                      style={tomorrow} 
+                      customStyle={{
+                        backgroundColor: 'transparent',
+                        padding: '16px',
+                        margin: 0,
+                        borderRadius: '4px',
+                        fontFamily: 'monospace',
+                        fontSize: '0.9rem',
+                        lineHeight: '1.5',
+                      }}
+                      wrapLongLines={false}
+                    >
+                      {errorLog}
+                    </SyntaxHighlighter>
+                  </pre>
+                </div>
+              </div>
+            </ScrollArea>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
