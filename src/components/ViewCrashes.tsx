@@ -1,15 +1,17 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Check, Send, Trash } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/components/ui/use-toast";
 import { Card } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface ViewCrashesProps {
   onViewFile: (filename: string) => void;
 }
 
-const initialCrashFiles = [
+const initialMainCrashFiles = [
   "crash-1.js",
   "crash-2.js",
   "crash-3.js",
@@ -24,16 +26,36 @@ const initialCrashFiles = [
   "crash-12.js"
 ];
 
+const initialVariantCrashFiles = [
+  "variant-crash-1.js",
+  "variant-crash-2.js",
+  "variant-crash-3.js",
+  "variant-crash-4.js",
+  "variant-crash-5.js",
+];
+
 const ViewCrashes = ({ onViewFile }: ViewCrashesProps) => {
   const { toast } = useToast();
-  const [crashFiles, setCrashFiles] = useState<string[]>(initialCrashFiles);
+  const [activeTab, setActiveTab] = useState<"main" | "variant">("main");
+  const [mainCrashFiles, setMainCrashFiles] = useState<string[]>(initialMainCrashFiles);
+  const [variantCrashFiles, setVariantCrashFiles] = useState<string[]>(initialVariantCrashFiles);
   const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   
-  // Crash statistics - for demo purposes we'll set 8 as flaky and the rest as deterministic
-  const totalCrashes = crashFiles.length;
-  const flakyCrashes = 8;
-  const deterministic = totalCrashes - flakyCrashes;
+  const currentCrashFiles = activeTab === "main" ? mainCrashFiles : variantCrashFiles;
+  
+  // Crash statistics
+  const mainTotalCrashes = mainCrashFiles.length;
+  const mainFlakyCrashes = 8;
+  const mainDeterministic = mainTotalCrashes - mainFlakyCrashes;
+  
+  const variantTotalCrashes = variantCrashFiles.length;
+  const variantFlakyCrashes = 3;
+  const variantDeterministic = variantTotalCrashes - variantFlakyCrashes;
+  
+  const totalCrashes = activeTab === "main" ? mainTotalCrashes : variantTotalCrashes;
+  const flakyCrashes = activeTab === "main" ? mainFlakyCrashes : variantFlakyCrashes;
+  const deterministic = activeTab === "main" ? mainDeterministic : variantDeterministic;
 
   const handleToggleSelection = (filename: string) => {
     if (selectedFiles.includes(filename)) {
@@ -45,7 +67,13 @@ const ViewCrashes = ({ onViewFile }: ViewCrashesProps) => {
 
   const handleDeleteCrash = (filename: string, e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent triggering row click
-    setCrashFiles(crashFiles.filter(file => file !== filename));
+    
+    if (activeTab === "main") {
+      setMainCrashFiles(mainCrashFiles.filter(file => file !== filename));
+    } else {
+      setVariantCrashFiles(variantCrashFiles.filter(file => file !== filename));
+    }
+    
     setSelectedFiles(selectedFiles.filter(file => file !== filename));
     
     toast({
@@ -79,6 +107,11 @@ const ViewCrashes = ({ onViewFile }: ViewCrashesProps) => {
     }, 1500);
   };
 
+  const handleTabChange = (value: string) => {
+    setActiveTab(value as "main" | "variant");
+    setSelectedFiles([]); // Clear selected files when changing tabs
+  };
+
   return (
     <div className="card-container h-[300px] flex flex-col">
       <div className="flex justify-between items-center mb-4">
@@ -89,24 +122,47 @@ const ViewCrashes = ({ onViewFile }: ViewCrashesProps) => {
           View Crashes
         </h2>
         
-        <Card className="bg-hacker-card border border-hacker-border p-2">
-          <div className="text-xs text-hacker-green font-semibold">Total Crashes</div>
-          <div className="text-xl font-bold font-mono">{totalCrashes}</div>
-          <div className="grid grid-cols-2 gap-2 mt-1 text-xs">
-            <div className="text-hacker-green">
-              Flaky: <span className="font-mono">{flakyCrashes}</span>
+        <div className="flex items-center gap-4">
+          <Tabs 
+            value={activeTab} 
+            onValueChange={handleTabChange}
+            className="bg-hacker-background border border-hacker-border rounded"
+          >
+            <TabsList className="bg-transparent border-b border-hacker-border">
+              <TabsTrigger 
+                value="main"
+                className="text-hacker-green data-[state=active]:bg-hacker-darkgreen data-[state=active]:text-white"
+              >
+                Main
+              </TabsTrigger>
+              <TabsTrigger 
+                value="variant"
+                className="text-hacker-green data-[state=active]:bg-hacker-darkgreen data-[state=active]:text-white"
+              >
+                Variant
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+          
+          <Card className="bg-hacker-card border border-hacker-border p-2">
+            <div className="text-xs text-hacker-green font-semibold">Total Crashes</div>
+            <div className="text-xl font-bold font-mono">{totalCrashes}</div>
+            <div className="grid grid-cols-2 gap-2 mt-1 text-xs">
+              <div className="text-hacker-green">
+                Flaky: <span className="font-mono">{flakyCrashes}</span>
+              </div>
+              <div className="text-hacker-red">
+                Deterministic: <span className="font-mono">{deterministic}</span>
+              </div>
             </div>
-            <div className="text-hacker-red">
-              Deterministic: <span className="font-mono">{deterministic}</span>
-            </div>
-          </div>
-        </Card>
+          </Card>
+        </div>
       </div>
       
       <div className="bg-hacker-background rounded border border-hacker-border flex-1 flex flex-col overflow-hidden">
         <ScrollArea className="flex-1 h-[120px]">
           <ul className="p-2">
-            {crashFiles.map((file) => (
+            {currentCrashFiles.map((file) => (
               <li 
                 key={file}
                 className="py-1 px-2 flex justify-between items-center cursor-pointer transition-colors rounded hover:bg-hacker-card"

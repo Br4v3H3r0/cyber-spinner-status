@@ -153,10 +153,7 @@ const MachineStatus = ({ onStart, onStop, loading }: MachineStatusProps) => {
                         disabled={loading[`stop-${machine.ip}`] || loading[`start-${machine.ip}`]}
                       >
                         {loading[`stop-${machine.ip}`] ? (
-                          <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Stopping
-                          </>
+                          <Loader2 className="h-4 w-4 animate-spin" />
                         ) : (
                           "Stop"
                         )}
@@ -169,10 +166,7 @@ const MachineStatus = ({ onStart, onStop, loading }: MachineStatusProps) => {
                         disabled={loading[`start-${machine.ip}`] || loading[`stop-${machine.ip}`]}
                       >
                         {loading[`start-${machine.ip}`] ? (
-                          <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Starting
-                          </>
+                          <Loader2 className="h-4 w-4 animate-spin" />
                         ) : (
                           "Start"
                         )}

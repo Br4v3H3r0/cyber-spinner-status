@@ -3,12 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 
 interface SystemControlProps {
-  onStartAll: () => void;
-  onStopAll: () => void;
   loading: Record<string, boolean>;
 }
 
-const SystemControl = ({ onStartAll, onStopAll, loading }: SystemControlProps) => {
+const SystemControl = ({ loading }: SystemControlProps) => {
   return (
     <div className="card-container">
       <h2 className="text-xl font-semibold text-hacker-green neonGreen mb-4 flex items-center gap-2">
@@ -17,38 +15,6 @@ const SystemControl = ({ onStartAll, onStopAll, loading }: SystemControlProps) =
         </span>
         System Control
       </h2>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <Button
-          className="bg-hacker-darkgreen hover:bg-hacker-green text-white h-12"
-          onClick={onStartAll}
-          disabled={loading["start-all"]}
-        >
-          {loading["start-all"] ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Starting All Fuzzers...
-            </>
-          ) : (
-            "Start All Fuzzers"
-          )}
-        </Button>
-        
-        <Button
-          className="bg-hacker-darkred hover:bg-hacker-red text-white h-12"
-          onClick={onStopAll}
-          disabled={loading["stop-all"]}
-        >
-          {loading["stop-all"] ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Stopping All Fuzzers...
-            </>
-          ) : (
-            "Stop All Fuzzers"
-          )}
-        </Button>
-      </div>
       
       <div className="bg-hacker-background p-4 rounded border border-hacker-border">
         <h3 className="text-hacker-green mb-2">System Status</h3>

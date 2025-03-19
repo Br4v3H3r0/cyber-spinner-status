@@ -5,7 +5,6 @@ import MachineStatus from "./MachineStatus";
 import ResourceUsage from "./ResourceUsage";
 import ProgramTemplates from "./ProgramTemplates";
 import ViewCrashes from "./ViewCrashes";
-import SystemControl from "./SystemControl";
 import TesterNode, { TesterStatus } from "./TesterNode";
 import GenerateDialog from "./GenerateDialog";
 import CrashFileDialog from "./CrashFileDialog";
@@ -114,32 +113,6 @@ const Dashboard = () => {
     }, 3000);
   };
 
-  const handleStartAllFuzzers = () => {
-    setLoading(prev => ({ ...prev, "start-all": true }));
-    
-    setTimeout(() => {
-      setLoading(prev => ({ ...prev, "start-all": false }));
-      toast({
-        title: "All Fuzzers Started",
-        description: "All fuzzers started successfully.",
-        className: "bg-hacker-card border-hacker-green text-white",
-      });
-    }, 2000);
-  };
-
-  const handleStopAllFuzzers = () => {
-    setLoading(prev => ({ ...prev, "stop-all": true }));
-    
-    setTimeout(() => {
-      setLoading(prev => ({ ...prev, "stop-all": false }));
-      toast({
-        title: "All Fuzzers Stopped",
-        description: "All fuzzers stopped successfully.",
-        className: "bg-hacker-card border-hacker-red text-white",
-      });
-    }, 2000);
-  };
-
   return (
     <div className="min-h-screen w-full p-4 md:p-6 text-white">
       <header className="flex items-center py-4">
@@ -173,13 +146,6 @@ const Dashboard = () => {
         <ViewCrashes 
           onViewFile={handleViewCrashFile}
         />
-        <div className="md:col-span-2">
-          <SystemControl 
-            onStartAll={handleStartAllFuzzers} 
-            onStopAll={handleStopAllFuzzers}
-            loading={loading}
-          />
-        </div>
       </div>
 
       <GenerateDialog 
