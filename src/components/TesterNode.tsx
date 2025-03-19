@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -23,14 +22,12 @@ const TesterNode = ({ onStart, onStop, onReset, loading, testerStatus }: TesterN
   const { toast } = useToast();
   const [isErrorLogOpen, setIsErrorLogOpen] = useState(false);
   
-  // Mock data for the tester node
   const testerData = {
     ip: "192.168.1.200",
     status: "active" as const,
     hashrate: 3500,
   };
-  
-  // Mock error log for the tester node
+
   const errorLog = `TypeError: Cannot read property 'length' of undefined
     at Object.execute (/home/fuzzer/variant/exploit.js:42:19)
     at FuzzGen.runTest (/home/fuzzer/variant/fuzzgen.js:156:22)
@@ -190,7 +187,7 @@ Stack trace:
               </Button>
             </div>
             <ScrollArea className="h-[80px] w-full">
-              <div className="font-mono text-xs text-white whitespace-pre w-full overflow-hidden">
+              <div className="font-mono text-xs text-white w-full overflow-hidden">
                 <SyntaxHighlighter 
                   language="javascript" 
                   style={tomorrow}
@@ -200,8 +197,12 @@ Stack trace:
                     margin: 0,
                     borderRadius: '4px',
                     width: '100%',
-                    maxWidth: '100%'
+                    maxWidth: '100%',
+                    overflowX: 'hidden',
+                    whiteSpace: 'pre-wrap',
+                    wordBreak: 'break-word'
                   }}
+                  wrapLines={true}
                 >
                   {errorLog}
                 </SyntaxHighlighter>
@@ -225,8 +226,11 @@ Stack trace:
                 borderRadius: '4px',
                 width: '100%',
                 maxWidth: '100%',
-                overflow: 'hidden'
+                overflowX: 'hidden',
+                whiteSpace: 'pre-wrap',
+                wordBreak: 'break-word'
               }}
+              wrapLines={true}
             >
               {errorLog}
             </SyntaxHighlighter>
