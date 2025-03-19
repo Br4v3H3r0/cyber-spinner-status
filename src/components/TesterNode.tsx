@@ -6,7 +6,7 @@ import { Loader2, RotateCcw, Trash, Maximize2 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
-import SyntaxHighlighter from "react-syntax-highlighter";
+import SyntaxHighlighter from "react-syntax-highlighter/dist/esm/default-highlight";
 import { tomorrow } from "react-syntax-highlighter/dist/esm/styles/hljs";
 
 export type TesterStatus = "idle" | "testing" | "success" | "error";
