@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -174,66 +175,45 @@ Stack trace:
         </div>
         
         {testerStatus === "error" && (
-          <div className="mt-4 border border-hacker-red rounded bg-hacker-background p-2 w-full">
-            <div className="flex justify-between items-center mb-2">
-              <div className="text-hacker-red font-semibold">Error Trace:</div>
-              <Button 
-                size="sm" 
-                variant="ghost" 
-                className="text-hacker-red hover:bg-hacker-darkred hover:text-white"
-                onClick={() => setIsErrorLogOpen(true)}
-              >
-                <Maximize2 size={14} />
-              </Button>
-            </div>
-            <ScrollArea className="h-[80px] w-full">
-              <div className="font-mono text-xs text-white w-full overflow-hidden">
-                <SyntaxHighlighter 
-                  language="javascript" 
-                  style={tomorrow}
-                  customStyle={{
-                    backgroundColor: 'transparent',
-                    padding: '8px',
-                    margin: 0,
-                    borderRadius: '4px',
-                    width: '100%',
-                    maxWidth: '100%',
-                    overflowX: 'hidden',
-                    whiteSpace: 'pre-wrap',
-                    wordBreak: 'break-word'
-                  }}
-                  wrapLines={true}
-                >
-                  {errorLog}
-                </SyntaxHighlighter>
-              </div>
-            </ScrollArea>
+          <div className="mt-4 flex items-center">
+            <span className="text-hacker-red font-semibold mr-2">Error Trace:</span>
+            <Button 
+              size="sm" 
+              variant="outline" 
+              className="text-hacker-red border-hacker-red hover:bg-hacker-darkred hover:text-white"
+              onClick={() => setIsErrorLogOpen(true)}
+            >
+              <Maximize2 size={14} className="mr-1" />
+              View Details
+            </Button>
           </div>
         )}
       </div>
       
       <Dialog open={isErrorLogOpen} onOpenChange={setIsErrorLogOpen}>
-        <DialogContent className="bg-hacker-card border-hacker-border text-white max-w-3xl">
+        <DialogContent className="bg-hacker-card border-hacker-border text-white max-w-4xl max-h-[90vh] w-[90vw]">
           <DialogTitle className="text-hacker-red">Error Trace Log</DialogTitle>
-          <ScrollArea className="h-[400px] mt-4 w-full">
-            <SyntaxHighlighter 
-              language="javascript" 
-              style={tomorrow} 
-              customStyle={{
-                backgroundColor: 'transparent',
-                padding: '16px',
-                margin: 0,
-                borderRadius: '4px',
-                width: '100%',
-                maxWidth: '100%',
-                overflowX: 'hidden',
-                whiteSpace: 'pre-wrap',
-                wordBreak: 'break-word'
-              }}
-              wrapLines={true}
-            >
-              {errorLog}
-            </SyntaxHighlighter>
+          <ScrollArea className="h-[80vh] w-full overflow-auto">
+            <div className="p-4 w-full overflow-auto">
+              <SyntaxHighlighter 
+                language="javascript" 
+                style={tomorrow} 
+                customStyle={{
+                  backgroundColor: 'transparent',
+                  padding: '16px',
+                  margin: 0,
+                  borderRadius: '4px',
+                  width: '100%',
+                  maxWidth: '100%',
+                  overflowX: 'auto',
+                  whiteSpace: 'pre-wrap',
+                  wordBreak: 'break-word'
+                }}
+                wrapLines={true}
+              >
+                {errorLog}
+              </SyntaxHighlighter>
+            </div>
           </ScrollArea>
         </DialogContent>
       </Dialog>
