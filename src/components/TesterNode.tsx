@@ -177,7 +177,7 @@ Stack trace:
         </div>
         
         {testerStatus === "error" && (
-          <div className="mt-4 border border-hacker-red rounded bg-hacker-background p-2">
+          <div className="mt-4 border border-hacker-red rounded bg-hacker-background p-2 w-full">
             <div className="flex justify-between items-center mb-2">
               <div className="text-hacker-red font-semibold">Error Trace:</div>
               <Button 
@@ -189,8 +189,8 @@ Stack trace:
                 <Maximize2 size={14} />
               </Button>
             </div>
-            <ScrollArea className="h-[80px]">
-              <div className="font-mono text-xs text-white whitespace-pre">
+            <ScrollArea className="h-[80px] w-full">
+              <div className="font-mono text-xs text-white whitespace-pre w-full overflow-hidden">
                 <SyntaxHighlighter 
                   language="javascript" 
                   style={tomorrow}
@@ -198,7 +198,9 @@ Stack trace:
                     backgroundColor: 'transparent',
                     padding: '8px',
                     margin: 0,
-                    borderRadius: '4px'
+                    borderRadius: '4px',
+                    width: '100%',
+                    maxWidth: '100%'
                   }}
                 >
                   {errorLog}
@@ -212,7 +214,7 @@ Stack trace:
       <Dialog open={isErrorLogOpen} onOpenChange={setIsErrorLogOpen}>
         <DialogContent className="bg-hacker-card border-hacker-border text-white max-w-3xl">
           <DialogTitle className="text-hacker-red">Error Trace Log</DialogTitle>
-          <ScrollArea className="h-[400px] mt-4">
+          <ScrollArea className="h-[400px] mt-4 w-full">
             <SyntaxHighlighter 
               language="javascript" 
               style={tomorrow} 
@@ -220,7 +222,10 @@ Stack trace:
                 backgroundColor: 'transparent',
                 padding: '16px',
                 margin: 0,
-                borderRadius: '4px'
+                borderRadius: '4px',
+                width: '100%',
+                maxWidth: '100%',
+                overflow: 'hidden'
               }}
             >
               {errorLog}
