@@ -196,8 +196,8 @@ Stack trace:
           <div className="flex-1 min-h-0">
             <ScrollArea className="h-[70vh] rounded border border-hacker-border bg-hacker-background">
               <div className="p-4">
-                <div className="overflow-x-auto">
-                  <pre className="w-max min-w-full">
+                <ScrollArea orientation="horizontal" className="w-full">
+                  <pre className="font-mono text-sm">
                     <SyntaxHighlighter 
                       language="javascript" 
                       style={tomorrow} 
@@ -209,13 +209,14 @@ Stack trace:
                         fontFamily: 'monospace',
                         fontSize: '0.9rem',
                         lineHeight: '1.5',
+                        minWidth: '100%'
                       }}
                       wrapLongLines={false}
                     >
                       {errorLog}
                     </SyntaxHighlighter>
                   </pre>
-                </div>
+                </ScrollArea>
               </div>
             </ScrollArea>
           </div>
