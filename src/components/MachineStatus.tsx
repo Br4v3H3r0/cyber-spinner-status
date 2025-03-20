@@ -6,6 +6,14 @@ import TotalHashrate from "./TotalHashrate";
 import { useToast } from "@/components/ui/use-toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -107,7 +115,7 @@ const MachineStatus = ({ onStart, onStop, loading }: MachineStatusProps) => {
   const renderMachineTable = (type: MachineType, title: string) => {
     const filteredMachines = machines.filter(m => m.type === type);
     const hasMasterForType = hasMaster(type);
-    const tableHeight = type === "main" ? "h-[220px]" : "h-[150px]";
+    const tableHeight = type === "main" ? "h-[180px]" : "h-[120px]";
     
     return (
       <div className="mb-4">
@@ -115,22 +123,25 @@ const MachineStatus = ({ onStart, onStop, loading }: MachineStatusProps) => {
           <h3 className="text-lg font-semibold text-hacker-green">{title}</h3>
         </div>
         
-        <ScrollArea className={`${tableHeight} border border-hacker-border rounded-md`}>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="sticky top-0 bg-hacker-card z-10">
-                <tr className="border-b border-hacker-border">
-                  <th className="text-left py-2 text-hacker-green">IP Address</th>
-                  <th className="text-center py-2 text-hacker-green">Status</th>
-                  <th className="text-left py-2 text-hacker-green">Hashrate</th>
-                  <th className="text-center py-2 text-hacker-green min-w-[120px]">Fuzzer</th>
-                  <th className="text-center py-2 text-hacker-green">Delete</th>
-                </tr>
-              </thead>
-              <tbody>
+        <div className="border border-hacker-border rounded-md overflow-hidden">
+          <Table>
+            <TableHeader className="bg-hacker-card sticky top-0 z-10">
+              <TableRow className="border-b border-hacker-border">
+                <TableHead className="text-left py-2 text-hacker-green">IP Address</TableHead>
+                <TableHead className="text-center py-2 text-hacker-green">Status</TableHead>
+                <TableHead className="text-left py-2 text-hacker-green">Hashrate</TableHead>
+                <TableHead className="text-center py-2 text-hacker-green min-w-[120px]">Fuzzer</TableHead>
+                <TableHead className="text-center py-2 text-hacker-green">Delete</TableHead>
+              </TableRow>
+            </TableHeader>
+          </Table>
+          
+          <ScrollArea className={tableHeight}>
+            <Table>
+              <TableBody>
                 {filteredMachines.map((machine) => (
-                  <tr key={machine.ip} className="border-b border-hacker-border">
-                    <td className="py-3 font-mono flex items-center gap-2">
+                  <TableRow key={machine.ip} className="border-b border-hacker-border">
+                    <TableCell className="py-3 font-mono flex items-center gap-2">
                       {machine.ip}
                       <Badge className={machine.role === "master" 
                         ? "bg-hacker-darkgreen text-white" 
@@ -138,14 +149,14 @@ const MachineStatus = ({ onStart, onStop, loading }: MachineStatusProps) => {
                       >
                         {machine.role === "master" ? "Master" : "Slave"}
                       </Badge>
-                    </td>
-                    <td className="py-3 text-center">
+                    </TableCell>
+                    <TableCell className="py-3 text-center">
                       <span className={`status-dot ${machine.status === "active" ? "status-active" : "status-inactive"}`} />
-                    </td>
-                    <td className="py-3 font-mono">
+                    </TableCell>
+                    <TableCell className="py-3 font-mono">
                       {machine.status === "active" ? `${machine.hashrate.toLocaleString()}` : "0"}
-                    </td>
-                    <td className="py-3 text-center">
+                    </TableCell>
+                    <TableCell className="py-3 text-center">
                       {machine.status === "active" ? (
                         <Button
                           className="bg-hacker-darkred hover:bg-hacker-red text-white w-[100px]"
@@ -173,8 +184,8 @@ const MachineStatus = ({ onStart, onStop, loading }: MachineStatusProps) => {
                           )}
                         </Button>
                       )}
-                    </td>
-                    <td className="py-3 text-center">
+                    </TableCell>
+                    <TableCell className="py-3 text-center">
                       <Button
                         size="sm"
                         variant="ghost"
@@ -186,16 +197,16 @@ const MachineStatus = ({ onStart, onStop, loading }: MachineStatusProps) => {
                       >
                         <Trash size={16} />
                       </Button>
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 ))}
-              </tbody>
-            </table>
-          </div>
-        </ScrollArea>
+              </TableBody>
+            </Table>
+          </ScrollArea>
+        </div>
         
         {newIpDialogOpen[type] ? (
-          <div className="flex gap-2 items-center flex-wrap">
+          <div className="flex gap-2 items-center flex-wrap mt-2">
             <input
               type="text"
               value={newIp[type]}
@@ -245,7 +256,7 @@ const MachineStatus = ({ onStart, onStop, loading }: MachineStatusProps) => {
         ) : (
           <Button
             onClick={() => setNewIpDialogOpen({ ...newIpDialogOpen, [type]: true })}
-            className="bg-hacker-darkgreen hover:bg-hacker-green text-white"
+            className="bg-hacker-darkgreen hover:bg-hacker-green text-white mt-2"
             size="sm"
           >
             <Plus className="mr-2 h-4 w-4" />
