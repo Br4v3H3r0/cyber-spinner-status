@@ -196,8 +196,8 @@ Stack trace:
           <div className="flex-1 min-h-0">
             <ScrollArea className="h-[70vh] rounded border border-hacker-border bg-hacker-background">
               <div className="p-4">
-                <ScrollArea orientation="horizontal" className="w-full">
-                  <pre className="font-mono text-sm">
+                <div className="overflow-x-auto w-full">
+                  <pre className="font-mono text-sm w-max min-w-full">
                     <SyntaxHighlighter 
                       language="javascript" 
                       style={tomorrow} 
@@ -216,7 +216,7 @@ Stack trace:
                       {errorLog}
                     </SyntaxHighlighter>
                   </pre>
-                </ScrollArea>
+                </div>
               </div>
             </ScrollArea>
           </div>
