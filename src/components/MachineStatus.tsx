@@ -1,10 +1,10 @@
-
 import { useState } from "react";
 import { Loader2, Plus, Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import TotalHashrate from "./TotalHashrate";
 import { useToast } from "@/components/ui/use-toast";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Select,
   SelectContent,
@@ -59,7 +59,6 @@ const MachineStatus = ({ onStart, onStop, loading }: MachineStatusProps) => {
   const totalHashrateMain = mainMachines.reduce((sum, machine) => sum + machine.hashrate, 0);
   const totalHashrateVariant = variantMachines.reduce((sum, machine) => sum + machine.hashrate, 0);
   
-  // Check if a master already exists for a specific machine type
   const hasMaster = (type: MachineType): boolean => {
     return machines.some(m => m.type === type && m.role === "master");
   };
@@ -77,7 +76,7 @@ const MachineStatus = ({ onStart, onStop, loading }: MachineStatusProps) => {
       
       setMachines([...machines, newMachine]);
       setNewIp({ ...newIp, [type]: "" });
-      setNewRole({ ...newRole, [type]: "slave" }); // Reset role to slave after adding
+      setNewRole({ ...newRole, [type]: "slave" });
       setNewIpDialogOpen({ ...newIpDialogOpen, [type]: false });
       
       toast({
@@ -108,6 +107,7 @@ const MachineStatus = ({ onStart, onStop, loading }: MachineStatusProps) => {
   const renderMachineTable = (type: MachineType, title: string) => {
     const filteredMachines = machines.filter(m => m.type === type);
     const hasMasterForType = hasMaster(type);
+    const tableHeight = type === "main" ? "h-[220px]" : "h-[150px]";
     
     return (
       <div className="mb-4">
@@ -115,143 +115,143 @@ const MachineStatus = ({ onStart, onStop, loading }: MachineStatusProps) => {
           <h3 className="text-lg font-semibold text-hacker-green">{title}</h3>
         </div>
         
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-hacker-border">
-                <th className="text-left py-2 text-hacker-green">IP Address</th>
-                <th className="text-center py-2 text-hacker-green">Status</th>
-                <th className="text-left py-2 text-hacker-green">Hashrate</th>
-                <th className="text-center py-2 text-hacker-green min-w-[120px]">Fuzzer</th>
-                <th className="text-center py-2 text-hacker-green">Delete</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredMachines.map((machine) => (
-                <tr key={machine.ip} className="border-b border-hacker-border">
-                  <td className="py-3 font-mono flex items-center gap-2">
-                    {machine.ip}
-                    <Badge className={machine.role === "master" 
-                      ? "bg-hacker-darkgreen text-white" 
-                      : "bg-hacker-card text-gray-300 border border-gray-600"}
-                    >
-                      {machine.role === "master" ? "Master" : "Slave"}
-                    </Badge>
-                  </td>
-                  <td className="py-3 text-center">
-                    <span className={`status-dot ${machine.status === "active" ? "status-active" : "status-inactive"}`} />
-                  </td>
-                  <td className="py-3 font-mono">
-                    {machine.status === "active" ? `${machine.hashrate.toLocaleString()}` : "0"}
-                  </td>
-                  <td className="py-3 text-center">
-                    {machine.status === "active" ? (
-                      <Button
-                        className="bg-hacker-darkred hover:bg-hacker-red text-white w-[100px]"
-                        size="sm"
-                        onClick={() => onStop(machine.ip)}
-                        disabled={loading[`stop-${machine.ip}`] || loading[`start-${machine.ip}`]}
-                      >
-                        {loading[`stop-${machine.ip}`] ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                          "Stop"
-                        )}
-                      </Button>
-                    ) : (
-                      <Button
-                        className="bg-hacker-darkgreen hover:bg-hacker-green text-white w-[100px]"
-                        size="sm"
-                        onClick={() => onStart(machine.ip)}
-                        disabled={loading[`start-${machine.ip}`] || loading[`stop-${machine.ip}`]}
-                      >
-                        {loading[`start-${machine.ip}`] ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                          "Start"
-                        )}
-                      </Button>
-                    )}
-                  </td>
-                  <td className="py-3 text-center">
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => handleDelete(machine.ip)}
-                      disabled={machine.status === "active" || loading[`start-${machine.ip}`] || loading[`stop-${machine.ip}`]}
-                      className={`text-hacker-red hover:text-white hover:bg-hacker-darkred ${
-                        machine.status === "active" ? "opacity-50 cursor-not-allowed" : ""
-                      }`}
-                    >
-                      <Trash size={16} />
-                    </Button>
-                  </td>
+        <ScrollArea className={`${tableHeight} border border-hacker-border rounded-md`}>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="sticky top-0 bg-hacker-card z-10">
+                <tr className="border-b border-hacker-border">
+                  <th className="text-left py-2 text-hacker-green">IP Address</th>
+                  <th className="text-center py-2 text-hacker-green">Status</th>
+                  <th className="text-left py-2 text-hacker-green">Hashrate</th>
+                  <th className="text-center py-2 text-hacker-green min-w-[120px]">Fuzzer</th>
+                  <th className="text-center py-2 text-hacker-green">Delete</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {filteredMachines.map((machine) => (
+                  <tr key={machine.ip} className="border-b border-hacker-border">
+                    <td className="py-3 font-mono flex items-center gap-2">
+                      {machine.ip}
+                      <Badge className={machine.role === "master" 
+                        ? "bg-hacker-darkgreen text-white" 
+                        : "bg-hacker-card text-gray-300 border border-gray-600"}
+                      >
+                        {machine.role === "master" ? "Master" : "Slave"}
+                      </Badge>
+                    </td>
+                    <td className="py-3 text-center">
+                      <span className={`status-dot ${machine.status === "active" ? "status-active" : "status-inactive"}`} />
+                    </td>
+                    <td className="py-3 font-mono">
+                      {machine.status === "active" ? `${machine.hashrate.toLocaleString()}` : "0"}
+                    </td>
+                    <td className="py-3 text-center">
+                      {machine.status === "active" ? (
+                        <Button
+                          className="bg-hacker-darkred hover:bg-hacker-red text-white w-[100px]"
+                          size="sm"
+                          onClick={() => onStop(machine.ip)}
+                          disabled={loading[`stop-${machine.ip}`] || loading[`start-${machine.ip}`]}
+                        >
+                          {loading[`stop-${machine.ip}`] ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            "Stop"
+                          )}
+                        </Button>
+                      ) : (
+                        <Button
+                          className="bg-hacker-darkgreen hover:bg-hacker-green text-white w-[100px]"
+                          size="sm"
+                          onClick={() => onStart(machine.ip)}
+                          disabled={loading[`start-${machine.ip}`] || loading[`stop-${machine.ip}`]}
+                        >
+                          {loading[`start-${machine.ip}`] ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            "Start"
+                          )}
+                        </Button>
+                      )}
+                    </td>
+                    <td className="py-3 text-center">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => handleDelete(machine.ip)}
+                        disabled={machine.status === "active" || loading[`start-${machine.ip}`] || loading[`stop-${machine.ip}`]}
+                        className={`text-hacker-red hover:text-white hover:bg-hacker-darkred ${
+                          machine.status === "active" ? "opacity-50 cursor-not-allowed" : ""
+                        }`}
+                      >
+                        <Trash size={16} />
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </ScrollArea>
         
-        <div className="mt-2">
-          {newIpDialogOpen[type] ? (
-            <div className="flex gap-2 items-center flex-wrap">
-              <input
-                type="text"
-                value={newIp[type]}
-                onChange={(e) => setNewIp({ ...newIp, [type]: e.target.value })}
-                placeholder="Enter IP address"
-                className="bg-hacker-background border border-hacker-border text-white px-3 py-2 rounded"
-              />
-              
-              <Select
-                value={newRole[type]}
-                onValueChange={(value: "master" | "slave") => setNewRole({ ...newRole, [type]: value })}
-              >
-                <SelectTrigger className="w-[120px] bg-hacker-background border-hacker-border text-white">
-                  <SelectValue placeholder="Role" />
-                </SelectTrigger>
-                <SelectContent className="bg-hacker-card border-hacker-border text-white">
-                  <SelectItem 
-                    value="master" 
-                    disabled={hasMasterForType}
-                    className={hasMasterForType ? "opacity-50 cursor-not-allowed" : ""}
-                  >
-                    Master
-                  </SelectItem>
-                  <SelectItem value="slave">Slave</SelectItem>
-                </SelectContent>
-              </Select>
-              
-              <Button 
-                size="sm"
-                onClick={() => handleAddIp(type)}
-                className="bg-hacker-darkgreen hover:bg-hacker-green text-white"
-              >
-                Add
-              </Button>
-              <Button 
-                size="sm"
-                variant="ghost"
-                onClick={() => {
-                  setNewIpDialogOpen({ ...newIpDialogOpen, [type]: false });
-                  setNewRole({ ...newRole, [type]: "slave" }); // Reset role to slave when canceling
-                }}
-                className="text-hacker-red hover:bg-hacker-darkred"
-              >
-                Cancel
-              </Button>
-            </div>
-          ) : (
-            <Button
-              onClick={() => setNewIpDialogOpen({ ...newIpDialogOpen, [type]: true })}
-              className="bg-hacker-darkgreen hover:bg-hacker-green text-white"
-              size="sm"
+        {newIpDialogOpen[type] ? (
+          <div className="flex gap-2 items-center flex-wrap">
+            <input
+              type="text"
+              value={newIp[type]}
+              onChange={(e) => setNewIp({ ...newIp, [type]: e.target.value })}
+              placeholder="Enter IP address"
+              className="bg-hacker-background border border-hacker-border text-white px-3 py-2 rounded"
+            />
+            
+            <Select
+              value={newRole[type]}
+              onValueChange={(value: "master" | "slave") => setNewRole({ ...newRole, [type]: value })}
             >
-              <Plus className="mr-2 h-4 w-4" />
-              Add {title} Machine
+              <SelectTrigger className="w-[120px] bg-hacker-background border-hacker-border text-white">
+                <SelectValue placeholder="Role" />
+              </SelectTrigger>
+              <SelectContent className="bg-hacker-card border-hacker-border text-white">
+                <SelectItem 
+                  value="master" 
+                  disabled={hasMasterForType}
+                  className={hasMasterForType ? "opacity-50 cursor-not-allowed" : ""}
+                >
+                  Master
+                </SelectItem>
+                <SelectItem value="slave">Slave</SelectItem>
+              </SelectContent>
+            </Select>
+            
+            <Button 
+              size="sm"
+              onClick={() => handleAddIp(type)}
+              className="bg-hacker-darkgreen hover:bg-hacker-green text-white"
+            >
+              Add
             </Button>
-          )}
-        </div>
+            <Button 
+              size="sm"
+              variant="ghost"
+              onClick={() => {
+                setNewIpDialogOpen({ ...newIpDialogOpen, [type]: false });
+                setNewRole({ ...newRole, [type]: "slave" });
+              }}
+              className="text-hacker-red hover:bg-hacker-darkred"
+            >
+              Cancel
+            </Button>
+          </div>
+        ) : (
+          <Button
+            onClick={() => setNewIpDialogOpen({ ...newIpDialogOpen, [type]: true })}
+            className="bg-hacker-darkgreen hover:bg-hacker-green text-white"
+            size="sm"
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            Add {title} Machine
+          </Button>
+        )}
       </div>
     );
   };
