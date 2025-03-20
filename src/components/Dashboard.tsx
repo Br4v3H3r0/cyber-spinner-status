@@ -129,12 +129,8 @@ const Dashboard = () => {
         />
         <div className="grid grid-rows-2 gap-6">
           <ResourceUsage />
-          <TesterNode 
-            onStart={handleStartTester}
-            onStop={handleStopTester}
-            onReset={handleResetTester}
-            loading={loading}
-            testerStatus={testerStatus}
+          <ViewCrashes 
+            onViewFile={handleViewCrashFile}
           />
         </div>
         <ProgramTemplates 
@@ -143,8 +139,12 @@ const Dashboard = () => {
           onSendToTester={handleSendToTester}
           testerStatus={testerStatus}
         />
-        <ViewCrashes 
-          onViewFile={handleViewCrashFile}
+        <TesterNode 
+          onStart={handleStartTester}
+          onStop={handleStopTester}
+          onReset={handleResetTester}
+          loading={loading}
+          testerStatus={testerStatus}
         />
       </div>
 
