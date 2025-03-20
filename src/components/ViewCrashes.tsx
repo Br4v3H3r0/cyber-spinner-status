@@ -113,16 +113,16 @@ const ViewCrashes = ({ onViewFile }: ViewCrashesProps) => {
   };
 
   return (
-    <div className="card-container h-[300px] flex flex-col">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold text-hacker-green neonGreen flex items-center gap-2">
-          <span className="bg-hacker-darkgreen p-1 rounded">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 13V7" /><path d="M12 17h.01" /><rect width="18" height="18" x="3" y="3" rx="2" /></svg>
-          </span>
-          View Crashes
-        </h2>
-        
-        <div className="flex items-center gap-4">
+    <div className="card-container h-[350px] flex flex-col">
+      <div className="flex flex-col mb-4">
+        <div className="flex justify-between items-center">
+          <h2 className="text-xl font-semibold text-hacker-green neonGreen flex items-center gap-2">
+            <span className="bg-hacker-darkgreen p-1 rounded">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 13V7" /><path d="M12 17h.01" /><rect width="18" height="18" x="3" y="3" rx="2" /></svg>
+            </span>
+            View Crashes
+          </h2>
+          
           <Tabs 
             value={activeTab} 
             onValueChange={handleTabChange}
@@ -143,24 +143,24 @@ const ViewCrashes = ({ onViewFile }: ViewCrashesProps) => {
               </TabsTrigger>
             </TabsList>
           </Tabs>
-          
-          <Card className="bg-hacker-card border border-hacker-border p-2">
-            <div className="text-xs text-hacker-green font-semibold">Total Crashes</div>
-            <div className="text-xl font-bold font-mono">{totalCrashes}</div>
-            <div className="grid grid-cols-2 gap-2 mt-1 text-xs">
-              <div className="text-hacker-green">
-                Flaky: <span className="font-mono">{flakyCrashes}</span>
-              </div>
-              <div className="text-hacker-red">
-                Deterministic: <span className="font-mono">{deterministic}</span>
-              </div>
-            </div>
-          </Card>
         </div>
+        
+        <Card className="bg-hacker-card border border-hacker-border p-2 mt-2">
+          <div className="text-xs text-hacker-green font-semibold">Total Crashes</div>
+          <div className="text-xl font-bold font-mono">{totalCrashes}</div>
+          <div className="grid grid-cols-2 gap-2 mt-1 text-xs">
+            <div className="text-hacker-green">
+              Flaky: <span className="font-mono">{flakyCrashes}</span>
+            </div>
+            <div className="text-hacker-red">
+              Deterministic: <span className="font-mono">{deterministic}</span>
+            </div>
+          </div>
+        </Card>
       </div>
       
       <div className="bg-hacker-background rounded border border-hacker-border flex-1 flex flex-col overflow-hidden">
-        <ScrollArea className="flex-1 h-[120px]">
+        <ScrollArea className="flex-1 h-[170px]">
           <ul className="p-2">
             {currentCrashFiles.map((file) => (
               <li 
