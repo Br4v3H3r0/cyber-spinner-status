@@ -2,10 +2,11 @@
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Loader2, RotateCcw, Trash, Maximize2 } from "lucide-react";
+import { Loader2, RotateCcw, Trash, Maximize2, Edit, Save, X } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
+import { Input } from "@/components/ui/input";
 import SyntaxHighlighter from "react-syntax-highlighter/dist/esm/default-highlight";
 import { tomorrow } from "react-syntax-highlighter/dist/esm/styles/hljs";
 
@@ -22,9 +23,11 @@ interface TesterNodeProps {
 const TesterNode = ({ onStart, onStop, onReset, loading, testerStatus }: TesterNodeProps) => {
   const { toast } = useToast();
   const [isErrorLogOpen, setIsErrorLogOpen] = useState(false);
+  const [isEditingIp, setIsEditingIp] = useState(false);
+  const [ip, setIp] = useState("192.168.1.200");
+  const [tempIp, setTempIp] = useState(ip);
   
   const testerData = {
-    ip: "192.168.1.200",
     status: "active" as const,
     hashrate: 3500,
   };
@@ -50,6 +53,39 @@ Stack trace:
         className: "bg-hacker-card border-hacker-red text-white",
       });
     }
+  };
+  
+  const handleEditIp = () => {
+    setIsEditingIp(true);
+    setTempIp(ip);
+  };
+  
+  const handleSaveIp = () => {
+    // Simple IP validation
+    const ipRegex = /^(\d{1,3}\.){3}\d{1,3}$/;
+    if (!ipRegex.test(tempIp)) {
+      toast({
+        title: "Invalid IP Address",
+        description: "Please enter a valid IPv4 address (e.g., 192.168.1.1)",
+        variant: "destructive",
+        className: "bg-hacker-card border-hacker-red text-white",
+      });
+      return;
+    }
+    
+    setIp(tempIp);
+    setIsEditingIp(false);
+    
+    toast({
+      title: "IP Address Updated",
+      description: `Tester node IP changed to ${tempIp}`,
+      className: "bg-hacker-card border-hacker-green text-white",
+    });
+  };
+  
+  const handleCancelEdit = () => {
+    setIsEditingIp(false);
+    setTempIp(ip);
   };
 
   const getStatusColor = (status: TesterStatus) => {
@@ -94,7 +130,46 @@ Stack trace:
           </thead>
           <tbody>
             <tr className="border-b border-hacker-border">
-              <td className="py-3 font-mono">{testerData.ip}</td>
+              <td className="py-3 font-mono">
+                {isEditingIp ? (
+                  <div className="flex items-center gap-1">
+                    <Input 
+                      value={tempIp}
+                      onChange={(e) => setTempIp(e.target.value)}
+                      className="h-8 text-xs py-1 font-mono bg-hacker-background border-hacker-border text-white"
+                    />
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={handleSaveIp}
+                      className="text-hacker-green hover:text-white hover:bg-hacker-darkgreen h-7 w-7 p-0"
+                    >
+                      <Save size={14} />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={handleCancelEdit}
+                      className="text-hacker-red hover:text-white hover:bg-hacker-darkred h-7 w-7 p-0"
+                    >
+                      <X size={14} />
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="flex items-center">
+                    <span>{ip}</span>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={handleEditIp}
+                      className="text-hacker-green hover:text-white hover:bg-hacker-darkgreen ml-2 h-7 w-7 p-0"
+                      disabled={testerData.status === "active"}
+                    >
+                      <Edit size={14} />
+                    </Button>
+                  </div>
+                )}
+              </td>
               <td className="py-3 text-center">
                 <span className={`status-dot ${testerData.status === "active" ? "status-active" : "status-inactive"}`} />
               </td>

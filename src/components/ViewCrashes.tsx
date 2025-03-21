@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Check, Send, Trash } from "lucide-react";
@@ -44,7 +43,6 @@ const ViewCrashes = ({ onViewFile }: ViewCrashesProps) => {
   
   const currentCrashFiles = activeTab === "main" ? mainCrashFiles : variantCrashFiles;
   
-  // Crash statistics
   const mainTotalCrashes = mainCrashFiles.length;
   const mainFlakyCrashes = 8;
   const mainDeterministic = mainTotalCrashes - mainFlakyCrashes;
@@ -96,7 +94,6 @@ const ViewCrashes = ({ onViewFile }: ViewCrashesProps) => {
 
     setLoading(true);
     
-    // Simulate sending
     setTimeout(() => {
       setLoading(false);
       toast({
@@ -145,22 +142,24 @@ const ViewCrashes = ({ onViewFile }: ViewCrashesProps) => {
           </Tabs>
         </div>
         
-        <Card className="bg-hacker-card border border-hacker-border p-2 mt-2">
-          <div className="text-xs text-hacker-green font-semibold">Total Crashes</div>
-          <div className="text-xl font-bold font-mono">{totalCrashes}</div>
-          <div className="grid grid-cols-2 gap-2 mt-1 text-xs">
-            <div className="text-hacker-green">
-              Flaky: <span className="font-mono">{flakyCrashes}</span>
+        <div className="flex mt-2">
+          <Card className="bg-hacker-card border border-hacker-border p-2 w-40">
+            <div className="text-xs text-hacker-green font-semibold">Total Crashes</div>
+            <div className="text-lg font-bold font-mono">{totalCrashes}</div>
+            <div className="grid grid-cols-2 gap-1 mt-1 text-xs">
+              <div className="text-hacker-green">
+                Flaky: <span className="font-mono">{flakyCrashes}</span>
+              </div>
+              <div className="text-hacker-red">
+                Deterministic: <span className="font-mono">{deterministic}</span>
+              </div>
             </div>
-            <div className="text-hacker-red">
-              Deterministic: <span className="font-mono">{deterministic}</span>
-            </div>
-          </div>
-        </Card>
+          </Card>
+        </div>
       </div>
       
       <div className="bg-hacker-background rounded border border-hacker-border flex-1 flex flex-col overflow-hidden">
-        <ScrollArea className="flex-1 h-[170px]">
+        <ScrollArea className="flex-1 h-[180px]">
           <ul className="p-2">
             {currentCrashFiles.map((file) => (
               <li 
