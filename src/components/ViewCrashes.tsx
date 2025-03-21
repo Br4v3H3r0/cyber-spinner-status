@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Check, Send, Trash } from "lucide-react";
@@ -143,9 +144,9 @@ const ViewCrashes = ({ onViewFile }: ViewCrashesProps) => {
         </div>
         
         <div className="flex mt-2">
-          <Card className="bg-hacker-card border border-hacker-border p-2 w-40">
+          <Card className="bg-hacker-card border border-hacker-border p-2 w-48">
             <div className="text-xs text-hacker-green font-semibold">Total Crashes</div>
-            <div className="text-lg font-bold font-mono">{totalCrashes}</div>
+            <div className="text-xl font-bold font-mono">{totalCrashes}</div>
             <div className="grid grid-cols-2 gap-1 mt-1 text-xs">
               <div className="text-hacker-green">
                 Flaky: <span className="font-mono">{flakyCrashes}</span>
