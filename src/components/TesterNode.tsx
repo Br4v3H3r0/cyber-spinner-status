@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -61,7 +60,6 @@ Stack trace:
   };
   
   const handleSaveIp = () => {
-    // Simple IP validation
     const ipRegex = /^(\d{1,3}\.){3}\d{1,3}$/;
     if (!ipRegex.test(tempIp)) {
       toast({
@@ -163,7 +161,7 @@ Stack trace:
                       variant="ghost"
                       onClick={handleEditIp}
                       className="text-hacker-green hover:text-white hover:bg-hacker-darkgreen ml-2 h-7 w-7 p-0"
-                      disabled={testerData.status === "active"}
+                      disabled={testerData.status === "active" || loading["start-tester"] || loading["stop-tester"]}
                     >
                       <Edit size={14} />
                     </Button>
