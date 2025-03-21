@@ -43,9 +43,10 @@ interface MachineStatusProps {
   onStart: (ip: string) => void;
   onStop: (ip: string) => void;
   loading: Record<string, boolean>;
+  activeNodes: Record<string, boolean>;
 }
 
-const MachineStatus = ({ onStart, onStop, loading }: MachineStatusProps) => {
+const MachineStatus = ({ onStart, onStop, loading, activeNodes }: MachineStatusProps) => {
   const { toast } = useToast();
   const [machines, setMachines] = useState<MachineData[]>(MACHINES);
   const [newIpDialogOpen, setNewIpDialogOpen] = useState<Record<MachineType, boolean>>({
@@ -61,8 +62,14 @@ const MachineStatus = ({ onStart, onStop, loading }: MachineStatusProps) => {
     variant: "slave"
   });
   
-  const mainMachines = machines.filter(m => m.type === "main");
-  const variantMachines = machines.filter(m => m.type === "variant");
+  const updatedMachines = machines.map(machine => ({
+    ...machine,
+    status: activeNodes[machine.ip] ? "active" : "inactive",
+    hashrate: activeNodes[machine.ip] ? machine.hashrate : 0,
+  }));
+  
+  const mainMachines = updatedMachines.filter(m => m.type === "main");
+  const variantMachines = updatedMachines.filter(m => m.type === "variant");
   
   const totalHashrateMain = mainMachines.reduce((sum, machine) => sum + machine.hashrate, 0);
   const totalHashrateVariant = variantMachines.reduce((sum, machine) => sum + machine.hashrate, 0);
@@ -113,7 +120,7 @@ const MachineStatus = ({ onStart, onStop, loading }: MachineStatusProps) => {
   };
 
   const renderMachineTable = (type: MachineType, title: string) => {
-    const filteredMachines = machines.filter(m => m.type === type);
+    const filteredMachines = updatedMachines.filter(m => m.type === type);
     const hasMasterForType = hasMaster(type);
     const tableHeight = type === "main" ? "h-[180px]" : "h-[120px]";
     

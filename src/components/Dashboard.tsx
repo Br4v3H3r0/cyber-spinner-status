@@ -17,12 +17,18 @@ const Dashboard = () => {
   const [selectedCrashFile, setSelectedCrashFile] = useState("");
   const [loading, setLoading] = useState<Record<string, boolean>>({});
   const [testerStatus, setTesterStatus] = useState<TesterStatus>("idle");
+  const [activeNodes, setActiveNodes] = useState<Record<string, boolean>>({});
+  const [testerActive, setTesterActive] = useState(false);
   
   const handleStartFuzzer = (ip: string) => {
+    if (activeNodes[ip]) return; // Skip if already active
+    
     setLoading(prev => ({ ...prev, [`start-${ip}`]: true }));
     
     setTimeout(() => {
       setLoading(prev => ({ ...prev, [`start-${ip}`]: false }));
+      setActiveNodes(prev => ({ ...prev, [ip]: true }));
+      
       toast({
         title: "Fuzzer Started",
         description: `Fuzzer on ${ip} started successfully.`,
@@ -32,10 +38,14 @@ const Dashboard = () => {
   };
 
   const handleStopFuzzer = (ip: string) => {
+    if (!activeNodes[ip]) return; // Skip if already inactive
+    
     setLoading(prev => ({ ...prev, [`stop-${ip}`]: true }));
     
     setTimeout(() => {
       setLoading(prev => ({ ...prev, [`stop-${ip}`]: false }));
+      setActiveNodes(prev => ({ ...prev, [ip]: false }));
+      
       toast({
         title: "Fuzzer Stopped",
         description: `Fuzzer on ${ip} stopped successfully.`,
@@ -45,10 +55,14 @@ const Dashboard = () => {
   };
 
   const handleStartTester = () => {
+    if (testerActive) return; // Skip if already active
+    
     setLoading(prev => ({ ...prev, "start-tester": true }));
     
     setTimeout(() => {
       setLoading(prev => ({ ...prev, "start-tester": false }));
+      setTesterActive(true);
+      
       toast({
         title: "Tester Started",
         description: "Tester node started successfully.",
@@ -58,10 +72,14 @@ const Dashboard = () => {
   };
 
   const handleStopTester = () => {
+    if (!testerActive) return; // Skip if already inactive
+    
     setLoading(prev => ({ ...prev, "stop-tester": true }));
     
     setTimeout(() => {
       setLoading(prev => ({ ...prev, "stop-tester": false }));
+      setTesterActive(false);
+      
       toast({
         title: "Tester Stopped",
         description: "Tester node stopped successfully.",
@@ -126,6 +144,7 @@ const Dashboard = () => {
           onStart={handleStartFuzzer} 
           onStop={handleStopFuzzer} 
           loading={loading}
+          activeNodes={activeNodes}
         />
         <div className="grid grid-rows-2 gap-6">
           <ResourceUsage />
@@ -145,6 +164,7 @@ const Dashboard = () => {
           onReset={handleResetTester}
           loading={loading}
           testerStatus={testerStatus}
+          isActive={testerActive}
         />
       </div>
 

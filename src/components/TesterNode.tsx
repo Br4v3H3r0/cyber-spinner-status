@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -17,9 +18,10 @@ interface TesterNodeProps {
   onReset: () => void;
   loading: Record<string, boolean>;
   testerStatus: TesterStatus;
+  isActive: boolean;
 }
 
-const TesterNode = ({ onStart, onStop, onReset, loading, testerStatus }: TesterNodeProps) => {
+const TesterNode = ({ onStart, onStop, onReset, loading, testerStatus, isActive }: TesterNodeProps) => {
   const { toast } = useToast();
   const [isErrorLogOpen, setIsErrorLogOpen] = useState(false);
   const [isEditingIp, setIsEditingIp] = useState(false);
@@ -27,8 +29,8 @@ const TesterNode = ({ onStart, onStop, onReset, loading, testerStatus }: TesterN
   const [tempIp, setTempIp] = useState(ip);
   
   const testerData = {
-    status: "active" as const,
-    hashrate: 3500,
+    status: isActive ? "active" as const : "inactive" as const,
+    hashrate: isActive ? 3500 : 0,
   };
 
   const errorLog = `TypeError: Cannot read property 'length' of undefined
