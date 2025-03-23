@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Loader2, Plus, Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -157,10 +158,10 @@ const MachineStatus = ({ onStart, onStop, loading, activeNodes }: MachineStatusP
                         {machine.role === "master" ? "Master" : "Slave"}
                       </Badge>
                     </TableCell>
-                    <TableCell className="py-3 text-left flex justify-end">
+                    <TableCell className="py-3 text-right">
                       <span className={`status-dot ${machine.status === "active" ? "status-active" : "status-inactive"}`} />
                     </TableCell>
-                    <TableCell className="py-3 font-mono text-left">
+                    <TableCell className="py-3 font-mono text-right">
                       {machine.status === "active" ? `${machine.hashrate.toLocaleString()}` : "0"}
                     </TableCell>
                     <TableCell className="py-3 text-center">
