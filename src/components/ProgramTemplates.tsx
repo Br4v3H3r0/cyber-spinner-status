@@ -16,9 +16,16 @@ interface ProgramTemplatesProps {
   loading: Record<string, boolean>;
   onSendToTester: () => void;
   testerStatus: TesterStatus;
+  testerEnabled?: boolean;
 }
 
-const ProgramTemplates = ({ onGenerate, loading, onSendToTester, testerStatus }: ProgramTemplatesProps) => {
+const ProgramTemplates = ({ 
+  onGenerate, 
+  loading, 
+  onSendToTester, 
+  testerStatus, 
+  testerEnabled = true 
+}: ProgramTemplatesProps) => {
   const { toast } = useToast();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -210,7 +217,7 @@ generateTestCase();`
                 variant="ghost"
                 size="sm"
                 onClick={handleSendToTester}
-                disabled={testerStatus === "testing"}
+                disabled={testerStatus === "testing" || !testerEnabled}
                 className="text-hacker-green hover:bg-hacker-darkgreen hover:text-white"
               >
                 {testerStatus === "success" ? "Upload" : "Send to Tester"}

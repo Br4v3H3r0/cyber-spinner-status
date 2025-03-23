@@ -157,10 +157,10 @@ const MachineStatus = ({ onStart, onStop, loading, activeNodes }: MachineStatusP
                         {machine.role === "master" ? "Master" : "Slave"}
                       </Badge>
                     </TableCell>
-                    <TableCell className="py-3 text-right">
+                    <TableCell className="py-3 text-left flex justify-end">
                       <span className={`status-dot ${machine.status === "active" ? "status-active" : "status-inactive"}`} />
                     </TableCell>
-                    <TableCell className="py-3 font-mono text-right">
+                    <TableCell className="py-3 font-mono text-left">
                       {machine.status === "active" ? `${machine.hashrate.toLocaleString()}` : "0"}
                     </TableCell>
                     <TableCell className="py-3 text-center">
