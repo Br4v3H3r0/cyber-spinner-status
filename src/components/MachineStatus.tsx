@@ -135,8 +135,8 @@ const MachineStatus = ({ onStart, onStop, loading, activeNodes }: MachineStatusP
             <TableHeader className="bg-hacker-card sticky top-0 z-10">
               <TableRow className="border-b border-hacker-border">
                 <TableHead className="text-left py-2 text-hacker-green">IP Address</TableHead>
-                <TableHead className="text-center py-2 text-hacker-green">Status</TableHead>
-                <TableHead className="text-center py-2 text-hacker-green">Hashrate</TableHead>
+                <TableHead className="text-right py-2 text-hacker-green">Status</TableHead>
+                <TableHead className="text-right py-2 text-hacker-green">Hashrate</TableHead>
                 <TableHead className="text-center py-2 text-hacker-green min-w-[120px]">Fuzzer</TableHead>
                 <TableHead className="text-center py-2 text-hacker-green">Delete</TableHead>
               </TableRow>
@@ -157,10 +157,10 @@ const MachineStatus = ({ onStart, onStop, loading, activeNodes }: MachineStatusP
                         {machine.role === "master" ? "Master" : "Slave"}
                       </Badge>
                     </TableCell>
-                    <TableCell className="py-3 text-center">
+                    <TableCell className="py-3 text-right">
                       <span className={`status-dot ${machine.status === "active" ? "status-active" : "status-inactive"}`} />
                     </TableCell>
-                    <TableCell className="py-3 font-mono text-center">
+                    <TableCell className="py-3 font-mono text-right">
                       {machine.status === "active" ? `${machine.hashrate.toLocaleString()}` : "0"}
                     </TableCell>
                     <TableCell className="py-3 text-center">

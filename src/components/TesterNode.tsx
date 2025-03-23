@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -135,8 +134,8 @@ Stack trace:
           <thead>
             <tr className="border-b border-hacker-border">
               <th className="text-left py-2 text-hacker-green">IP Address</th>
-              <th className="text-center py-2 text-hacker-green">Status</th>
-              <th className="text-center py-2 text-hacker-green">Hashrate</th>
+              <th className="text-right py-2 text-hacker-green">Status</th>
+              <th className="text-right py-2 text-hacker-green">Hashrate</th>
               <th className="text-center py-2 text-hacker-green min-w-[120px]">Fuzzer</th>
             </tr>
           </thead>
@@ -182,10 +181,10 @@ Stack trace:
                   </div>
                 )}
               </td>
-              <td className="py-3 text-center">
+              <td className="py-3 text-right">
                 <span className={`status-dot ${testerData.status === "active" ? "status-active" : "status-inactive"}`} />
               </td>
-              <td className="py-3 font-mono text-center">
+              <td className="py-3 font-mono text-right">
                 {testerData.status === "active" ? `${testerData.hashrate.toLocaleString()}` : "0"}
               </td>
               <td className="py-3 text-center">
