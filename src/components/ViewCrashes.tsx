@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface ViewCrashesProps {
   onViewFile: (filename: string) => void;
+  testerEnabled?: boolean;
 }
 
 const initialMainCrashFiles = [
@@ -34,7 +35,7 @@ const initialVariantCrashFiles = [
   "variant-crash-5.js",
 ];
 
-const ViewCrashes = ({ onViewFile }: ViewCrashesProps) => {
+const ViewCrashes = ({ onViewFile, testerEnabled = true }: ViewCrashesProps) => {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<"main" | "variant">("main");
   const [mainCrashFiles, setMainCrashFiles] = useState<string[]>(initialMainCrashFiles);
@@ -202,7 +203,7 @@ const ViewCrashes = ({ onViewFile }: ViewCrashesProps) => {
           <Button
             className="w-full bg-hacker-darkblue hover:bg-hacker-blue text-white"
             onClick={handleSendToVariant}
-            disabled={selectedFiles.length === 0 || loading}
+            disabled={selectedFiles.length === 0 || loading || !testerEnabled}
           >
             {loading ? (
               <>

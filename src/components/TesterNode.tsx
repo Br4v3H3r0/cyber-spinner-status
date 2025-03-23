@@ -2,11 +2,12 @@
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Loader2, RotateCcw, Trash, Maximize2, Edit, Save, X } from "lucide-react";
+import { Loader2, RotateCcw, Maximize2, Edit, Save, X, Power } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import SyntaxHighlighter from "react-syntax-highlighter/dist/esm/default-highlight";
 import { tomorrow } from "react-syntax-highlighter/dist/esm/styles/hljs";
 
@@ -27,6 +28,7 @@ const TesterNode = ({ onStart, onStop, onReset, loading, testerStatus, isActive 
   const [isEditingIp, setIsEditingIp] = useState(false);
   const [ip, setIp] = useState("192.168.1.200");
   const [tempIp, setTempIp] = useState(ip);
+  const [enabled, setEnabled] = useState(true);
   
   const testerData = {
     status: isActive ? "active" as const : "inactive" as const,
@@ -45,16 +47,6 @@ Stack trace:
   #2 0x34567 in node::Environment::AsyncHooks::AsyncCall() /node/src/env-inl.h:375:22
   #3 0x45678 in node::AsyncWrap::MakeCallback() /node/src/async_wrap.cc:294:11
 `;
-
-  const handleDelete = () => {
-    if (testerData.status !== "active") {
-      toast({
-        title: "Tester Node Deleted",
-        description: "Tester node has been removed from the network.",
-        className: "bg-hacker-card border-hacker-red text-white",
-      });
-    }
-  };
   
   const handleEditIp = () => {
     setIsEditingIp(true);
@@ -88,6 +80,16 @@ Stack trace:
     setTempIp(ip);
   };
 
+  const handleToggleEnabled = (checked: boolean) => {
+    setEnabled(checked);
+    
+    toast({
+      title: checked ? "Tester Node Enabled" : "Tester Node Disabled",
+      description: checked ? "Tester node is now active" : "Tester node is now inactive",
+      className: `bg-hacker-card border-${checked ? 'hacker-green' : 'hacker-red'} text-white`,
+    });
+  };
+
   const getStatusColor = (status: TesterStatus) => {
     switch(status) {
       case "idle": return "bg-hacker-green";
@@ -109,13 +111,24 @@ Stack trace:
   };
 
   return (
-    <div className="card-container">
-      <h2 className="text-xl font-semibold text-hacker-green neonGreen mb-4 flex items-center gap-2">
-        <span className="bg-hacker-darkgreen p-1 rounded">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m14 5-7 7 7 7" /></svg>
-        </span>
-        Tester Node
-      </h2>
+    <div className={`card-container ${!enabled ? 'opacity-50 filter blur-[1px]' : ''}`}>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-semibold text-hacker-green neonGreen flex items-center gap-2">
+          <span className="bg-hacker-darkgreen p-1 rounded">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m14 5-7 7 7 7" /></svg>
+          </span>
+          Tester Node
+        </h2>
+        
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-hacker-green">{enabled ? 'Enabled' : 'Disabled'}</span>
+          <Switch 
+            checked={enabled} 
+            onCheckedChange={handleToggleEnabled}
+            className="data-[state=checked]:bg-hacker-green data-[state=unchecked]:bg-hacker-darkred"
+          />
+        </div>
+      </div>
       
       <div className="overflow-x-auto">
         <table className="w-full">
@@ -123,9 +136,8 @@ Stack trace:
             <tr className="border-b border-hacker-border">
               <th className="text-left py-2 text-hacker-green">IP Address</th>
               <th className="text-center py-2 text-hacker-green">Status</th>
-              <th className="text-left py-2 text-hacker-green">Hashrate</th>
+              <th className="text-center py-2 text-hacker-green">Hashrate</th>
               <th className="text-center py-2 text-hacker-green min-w-[120px]">Fuzzer</th>
-              <th className="text-center py-2 text-hacker-green">Delete</th>
             </tr>
           </thead>
           <tbody>
@@ -173,7 +185,7 @@ Stack trace:
               <td className="py-3 text-center">
                 <span className={`status-dot ${testerData.status === "active" ? "status-active" : "status-inactive"}`} />
               </td>
-              <td className="py-3 font-mono">
+              <td className="py-3 font-mono text-center">
                 {testerData.status === "active" ? `${testerData.hashrate.toLocaleString()}` : "0"}
               </td>
               <td className="py-3 text-center">
@@ -182,7 +194,7 @@ Stack trace:
                     className="bg-hacker-darkred hover:bg-hacker-red text-white w-[100px]"
                     size="sm"
                     onClick={onStop}
-                    disabled={loading["stop-tester"]}
+                    disabled={loading["stop-tester"] || !enabled}
                   >
                     {loading["stop-tester"] ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
@@ -195,7 +207,7 @@ Stack trace:
                     className="bg-hacker-darkgreen hover:bg-hacker-green text-white w-[100px]"
                     size="sm"
                     onClick={onStart}
-                    disabled={loading["start-tester"]}
+                    disabled={loading["start-tester"] || !enabled}
                   >
                     {loading["start-tester"] ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
@@ -204,19 +216,6 @@ Stack trace:
                     )}
                   </Button>
                 )}
-              </td>
-              <td className="py-3 text-center">
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={handleDelete}
-                  disabled={testerData.status === "active" || loading["start-tester"] || loading["stop-tester"]}
-                  className={`text-hacker-red hover:text-white hover:bg-hacker-darkred ${
-                    testerData.status === "active" ? "opacity-50 cursor-not-allowed" : ""
-                  }`}
-                >
-                  <Trash size={16} />
-                </Button>
               </td>
             </tr>
           </tbody>
@@ -236,7 +235,7 @@ Stack trace:
             size="sm"
             onClick={onReset}
             className="bg-hacker-background hover:bg-hacker-card border border-hacker-border text-hacker-green"
-            disabled={testerStatus === "idle" || loading["reset-tester"]}
+            disabled={testerStatus === "idle" || loading["reset-tester"] || !enabled}
           >
             {loading["reset-tester"] ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -257,6 +256,7 @@ Stack trace:
               variant="outline" 
               className="text-hacker-red border-hacker-red hover:bg-hacker-darkred hover:text-white"
               onClick={() => setIsErrorLogOpen(true)}
+              disabled={!enabled}
             >
               <Maximize2 size={14} className="mr-1" />
               View Details
