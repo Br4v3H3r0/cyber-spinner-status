@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -31,7 +32,6 @@ const TesterNode = ({ onStart, onStop, onReset, loading, testerStatus, isActive 
   
   const testerData = {
     status: isActive ? "active" as const : "inactive" as const,
-    hashrate: isActive ? 3500 : 0,
   };
 
   const errorLog = `TypeError: Cannot read property 'length' of undefined
@@ -135,7 +135,6 @@ Stack trace:
             <tr className="border-b border-hacker-border">
               <th className="text-left py-2 text-hacker-green">IP Address</th>
               <th className="text-right py-2 text-hacker-green">Status</th>
-              <th className="text-right py-2 text-hacker-green">Hashrate</th>
               <th className="text-center py-2 text-hacker-green min-w-[120px]">Fuzzer</th>
             </tr>
           </thead>
@@ -183,9 +182,6 @@ Stack trace:
               </td>
               <td className="py-3 text-right">
                 <span className={`status-dot ${testerData.status === "active" ? "status-active" : "status-inactive"}`} />
-              </td>
-              <td className="py-3 font-mono text-right">
-                {testerData.status === "active" ? `${testerData.hashrate.toLocaleString()}` : "0"}
               </td>
               <td className="py-3 text-center">
                 {testerData.status === "active" ? (
