@@ -14,13 +14,15 @@ const TotalHashrate = ({ main, variant }: TotalHashrateProps) => {
   const totalExecsValue = total / 1000;
   
   return (
-    <Card className="bg-hacker-card border border-hacker-border p-2">
-      <div className="text-xs text-hacker-green font-semibold">Total Hashrate</div>
-      <div className="text-xl font-bold font-mono">
-        {totalExecsValue.toFixed(2)}
-        <span className="text-sm ml-1 text-gray-400">Execs/s</span>
+    <Card className="bg-hacker-card border border-hacker-border p-2 h-full flex flex-col justify-between">
+      <div>
+        <div className="text-xs text-hacker-green font-semibold">Total Hashrate</div>
+        <div className="text-xl font-bold font-mono mt-1">
+          {totalExecsValue.toFixed(2)}
+          <span className="text-sm ml-1 text-gray-400">Execs/s</span>
+        </div>
       </div>
-      <div className="grid grid-cols-2 gap-2 mt-1 text-xs">
+      <div className="grid grid-cols-2 gap-2 mt-auto text-xs">
         <div className="text-hacker-green">
           Main: <span className="font-mono">{mainExecsValue.toFixed(2)}</span>
           <span className="text-gray-400 ml-1">Execs/s</span>
