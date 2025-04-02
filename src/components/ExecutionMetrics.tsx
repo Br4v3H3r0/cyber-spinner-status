@@ -26,19 +26,9 @@ const ExecutionMetrics = ({ totalExecs, coverage }: ExecutionMetricsProps) => {
   };
 
   return (
-    <div className="flex gap-2">
+    <div className="flex flex-col gap-2">
       <Card className="bg-hacker-card border border-hacker-border p-2">
-        <div className="grid grid-cols-2 gap-2 text-xs">
-          <div className="text-hacker-green">
-            Main: <span className="font-mono">{coverage.main.toFixed(1)}%</span>
-          </div>
-          <div className="text-hacker-blue">
-            Variant: <span className="font-mono">{coverage.variant.toFixed(1)}%</span>
-          </div>
-        </div>
-      </Card>
-      
-      <Card className="bg-hacker-card border border-hacker-border p-2">
+        <div className="text-xs text-hacker-green font-semibold mb-1">Total Executions</div>
         <div className="grid grid-cols-2 gap-2 text-xs">
           <div className="text-hacker-green">
             Main: <span className="font-mono">{formatNumber(totalExecs.main)}</span>
@@ -48,8 +38,21 @@ const ExecutionMetrics = ({ totalExecs, coverage }: ExecutionMetricsProps) => {
           </div>
         </div>
       </Card>
+      
+      <Card className="bg-hacker-card border border-hacker-border p-2">
+        <div className="text-xs text-hacker-green font-semibold mb-1">Coverage</div>
+        <div className="grid grid-cols-2 gap-2 text-xs">
+          <div className="text-hacker-green">
+            Main: <span className="font-mono">{coverage.main.toFixed(1)}%</span>
+          </div>
+          <div className="text-hacker-blue">
+            Variant: <span className="font-mono">{coverage.variant.toFixed(1)}%</span>
+          </div>
+        </div>
+      </Card>
     </div>
   );
 };
 
 export default ExecutionMetrics;
+
