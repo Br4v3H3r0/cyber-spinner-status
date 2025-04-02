@@ -1,9 +1,9 @@
-
 import { useState } from "react";
 import { Loader2, Plus, Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import TotalHashrate from "./TotalHashrate";
+import ExecutionMetrics from "./ExecutionMetrics";
 import { useToast } from "@/components/ui/use-toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -118,6 +118,16 @@ const MachineStatus = ({ onStart, onStop, loading, activeNodes }: MachineStatusP
       description: `${ip} removed from the network.`,
       className: "bg-hacker-card border-hacker-red text-white",
     });
+  };
+
+  const totalExecs = {
+    main: 1_234_567_890,
+    variant: 876_543_210,
+  };
+
+  const coverage = {
+    main: 67.8,
+    variant: 54.3,
   };
 
   const renderMachineTable = (type: MachineType, title: string) => {
@@ -284,7 +294,13 @@ const MachineStatus = ({ onStart, onStop, loading, activeNodes }: MachineStatusP
           </span>
           Machine Status
         </h2>
-        <TotalHashrate main={totalHashrateMain} variant={totalHashrateVariant} />
+        <div className="flex gap-4 items-start">
+          <ExecutionMetrics 
+            totalExecs={totalExecs}
+            coverage={coverage}
+          />
+          <TotalHashrate main={totalHashrateMain} variant={totalHashrateVariant} />
+        </div>
       </div>
       
       {renderMachineTable("main", "Fuzzilli Main")}

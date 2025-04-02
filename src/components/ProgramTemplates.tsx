@@ -1,10 +1,16 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2, Upload, MessageSquare, Trash, Code } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import GenerateTemplateDialog from "./GenerateTemplateDialog";
 import { TesterStatus } from "./TesterNode";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface TemplateFile {
   name: string;
@@ -31,6 +37,7 @@ const ProgramTemplates = ({
   const [uploading, setUploading] = useState(false);
   const [generatedTemplate, setGeneratedTemplate] = useState<TemplateFile | null>(null);
   const [templateDialogOpen, setTemplateDialogOpen] = useState(false);
+  const [templateWeight, setTemplateWeight] = useState("5");
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -213,6 +220,26 @@ generateTestCase();`
               <span className="truncate">{generatedTemplate.name}</span>
             </div>
             <div className="flex items-center">
+              {testerStatus === "success" && (
+                <div className="flex items-center mr-2">
+                  <span className="text-sm text-hacker-green mr-2">Weight:</span>
+                  <Select 
+                    value={templateWeight} 
+                    onValueChange={setTemplateWeight}
+                  >
+                    <SelectTrigger className="h-8 w-16 bg-hacker-background border-hacker-border text-white">
+                      <SelectValue placeholder="5" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-hacker-card border-hacker-border text-white">
+                      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((value) => (
+                        <SelectItem key={value} value={value.toString()}>
+                          {value}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
               <Button
                 variant="ghost"
                 size="sm"
