@@ -138,30 +138,30 @@ const Dashboard = () => {
         </div>
       </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-10 gap-6">
-        <div className="lg:col-span-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+     
           <MachineStatus 
             onStart={handleStartFuzzer} 
             onStop={handleStopFuzzer} 
             loading={loading}
             activeNodes={activeNodes}
           />
-        </div>
-        <div className="lg:col-span-4 grid grid-rows-2 gap-6">
+        
+        <div className="grid grid-rows-2 gap-6">
           <ResourceUsage />
           <ViewCrashes 
             onViewFile={handleViewCrashFile}
           />
         </div>
-        <div className="lg:col-span-6">
+        {/* <div className="lg:col-span-6"> */}
           <ProgramTemplates 
             onGenerate={handleGenerate} 
             loading={loading}
             onSendToTester={handleSendToTester}
             testerStatus={testerStatus}
           />
-        </div>
-        <div className="lg:col-span-4">
+        {/* </div> */}
+        {/* <div className="lg:col-span-4"> */}
           <TesterNode 
             onStart={handleStartTester}
             onStop={handleStopTester}
@@ -170,7 +170,7 @@ const Dashboard = () => {
             testerStatus={testerStatus}
             isActive={testerActive}
           />
-        </div>
+        {/* </div> */}
       </div>
 
       <GenerateDialog 
